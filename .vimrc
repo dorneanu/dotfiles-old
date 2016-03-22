@@ -20,6 +20,11 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'Elive/vim-colorscheme-elive'
 Plugin 'scrooloose/nerdtree'
 Plugin 'kien/ctrlp.vim'
+Plugin 'andviro/flake8-vim'
+" Plugin 'scrooloose/syntastic'
+Plugin 'majutsushi/tagbar'
+Plugin 'vim-airline/vim-airline'
+Plugin 'kshenoy/vim-signature'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -42,6 +47,8 @@ colorscheme elive
 " Misc {{{
 set ttyfast                     " faster redraw
 set backspace=indent,eol,start
+set mouse=a
+set encoding=utf-8
 " }}}
 
 " Spaces & Tabs {{{
@@ -84,3 +91,8 @@ let g:ctrlp_switch_buffer = 0
 let g:ctrlp_working_path_mode = 0
 let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 
+" Easy split navigations
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
