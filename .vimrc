@@ -68,3 +68,19 @@ set showmatch           " higlight matching parenthesis
 set ignorecase          " ignore case when searching
 set incsearch           " search as characters are entered
 set hlsearch            " highlight all matches
+
+" NerdTree
+autocmd VimEnter * NERDTree
+autocmd BufWinEnter * NERDTreeMirror
+autocmd VimEnter * wincmd p
+map <F5> :NERDTreeFocus<CR>
+
+" TagBar
+ nnoremap <silent> <F9> :TagbarToggle<CR>
+
+" CtrlP settings
+let g:ctrlp_match_window = 'bottom,order:ttb'
+let g:ctrlp_switch_buffer = 0
+let g:ctrlp_working_path_mode = 0
+let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+
