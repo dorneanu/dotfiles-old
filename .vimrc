@@ -77,9 +77,9 @@ set incsearch           " search as characters are entered
 set hlsearch            " highlight all matches
 
 " NerdTree
-autocmd VimEnter * NERDTree
-autocmd BufWinEnter * NERDTreeMirror
-autocmd VimEnter * wincmd p
+" autocmd VimEnter * NERDTree
+" autocmd BufWinEnter * NERDTreeMirror
+" autocmd VimEnter * wincmd p
 map <F5> :NERDTreeFocus<CR>
 
 " TagBar
@@ -108,4 +108,5 @@ nmap <Leader>P "+P
 vmap <Leader>p "+p
 vmap <Leader>P "+P
 nmap <Leader><Leader> V
+nmap <leader>n :NERDTreeToggle<cr>
 
