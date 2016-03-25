@@ -25,6 +25,8 @@ Plugin 'andviro/flake8-vim'
 Plugin 'majutsushi/tagbar'
 Plugin 'vim-airline/vim-airline'
 Plugin 'kshenoy/vim-signature'
+Plugin 'xolox/vim-misc'
+Plugin 'xolox/vim-session'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -65,7 +67,7 @@ set autoindent
 " " UI Layout {{{
 set number              " show line numbers
 set showcmd             " show command in bottom bar
-set nocursorline          " highlight current line
+set cursorline          " highlight current line
 set wildmenu
 set lazyredraw
 set showmatch           " higlight matching parenthesis
@@ -110,3 +112,5 @@ vmap <Leader>P "+P
 nmap <Leader><Leader> V
 nmap <leader>n :NERDTreeToggle<cr>
 
+" vim-session settings
+let g:session_autosave = 'no'
