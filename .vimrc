@@ -91,7 +91,26 @@ map <F5> :NERDTreeFocus<CR>
 let g:ctrlp_match_window = 'bottom,order:ttb'
 let g:ctrlp_switch_buffer = 0
 let g:ctrlp_working_path_mode = 0
-let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+
+" The Silver Searcher
+if executable('ag')
+  " Use ag over grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+  
+  " bind \ (backward slash) to grep shortcut
+  command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
+  nnoremap \ :Ag<SPACE>
+endif
+
+
+" bind K to grep word under cursor
+nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
 
 " Easy split navigations
 nnoremap <C-J> <C-W><C-J>
@@ -103,6 +122,7 @@ nnoremap <C-H> <C-W><C-H>
 let mapleader = ","
 nnoremap <Leader>o :CtrlP<CR>
 nnoremap <Leader>w :w<CR>
+nnoremap <Leader>q :q<CR>
 vmap <Leader>y "+y
 vmap <Leader>d "+d
 nmap <Leader>p "+p
