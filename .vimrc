@@ -131,6 +131,7 @@ vmap <Leader>p "+p
 vmap <Leader>P "+P
 nmap <Leader><Leader> V
 nmap <leader>n :NERDTreeToggle<cr>
+nmap <leader>r :!%:p
 
 " vim-session settings
 let g:session_autosave = 'no'
