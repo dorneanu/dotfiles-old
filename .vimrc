@@ -133,5 +133,11 @@ nmap <Leader><Leader> V
 nmap <leader>n :NERDTreeToggle<cr>
 nmap <leader>r :!%:p<cr>
 
+" Resize panels
+nnoremap <silent> <Leader>+ :exe "resize +5"<CR>
+nnoremap <silent> <Leader>- :exe "resize -5"<CR>
+nnoremap <silent> <Leader>> :exe "vertical resize +5"<CR>
+nnoremap <silent> <Leader>< :exe "vertical resize -5"<CR>
+
 " vim-session settings
 let g:session_autosave = 'no'
