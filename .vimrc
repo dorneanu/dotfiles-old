@@ -27,6 +27,7 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'kshenoy/vim-signature'
 Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-session'
+Plugin 'hari-rangarajan/CCTree'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -108,6 +109,23 @@ if executable('ag')
   nnoremap \ :Ag<SPACE>
 endif
 
+" CScope
+if has('cscope')
+	set cscopetag cscopeverbose
+
+	if has('quickfix')
+		set cscopequickfix=s-,c-,d-,i-,t-,e-
+	endif
+
+	cnoreabbrev csa cs add
+	cnoreabbrev csf cs find
+	cnoreabbrev csk cs kill
+	cnoreabbrev csr cs reset
+	cnoreabbrev css cs show
+	cnoreabbrev csh cs help
+
+	command -nargs=0 Cscope cs add $VIMSRC/src/cscope.out $VIMSRC/src
+endif
 
 " bind K to grep word under cursor
 nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
