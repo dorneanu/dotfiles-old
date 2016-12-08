@@ -13,17 +13,19 @@ scrollback_lines = 1000
 search_wrap = true
 cursor_blink = system
 cursor_shape = block
-font = Monospace 10
+font = Monospace 11
+# font = Monospace 14
 browser = opera
 
 [colors]
 
 # special
 foreground      = #839496
+# foreground = #000
 foreground_bold = #eee8d5
 cursor = #93a1a1
 foreground_dim = #888888
-#background      = #1f1f1f
+# background      = #fff
 background = rgba(11 ,11, 11, 0.95)
 # colors from color0 to color254 can be set
 color0 = #073642

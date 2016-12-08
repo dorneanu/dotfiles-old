@@ -1,10 +1,21 @@
 #!/bin/bash
-IMAGE=/tmp/screen_locked.png
 
-xset b off
-scrot $IMAGE
+LINUX_SRC=/usr/src/linux-4.7
+TERMSAVER_PATH=$LINUX_SRC/arch/`ls $LINUX_SRC/arch/ | sort -R |tail -n1`
 
-#convert -scale 25% -scale 400% $IMAGE $IMAGE
-convert -blur 3x3 $IMAGE $IMAGE
+# scrnsvr
+termite --name "scrnsvr" -e "termsaver programmer --path ${TERMSAVER_PATH}" &
+sleep 2
+WID_SVR=`xdotool search --name \"scrnsvr\" | tail -n1` && xdotool windowactivate $WID_SVR &
+xdotool key F11 
 
-i3lock -i $IMAGE
+# scrnclock
+# termite --name "scrnclock" -e 'termsaver clock' &
+# sleep 2
+# WID_CLOCK=`xdotool search --name \"scrnclock\" | tail -n1` && xdotool windowactivate $WID_CLOCK &
+# xdotool key F11 &
+
+pyxtrlock
+# xkill -id $WID_SVR
+# xkill -id $WID_CLOCK
+xdotool getwindowfocus windowkill 

@@ -41,6 +41,8 @@ exec --no-startup-id setxkbmap de
 # exec --no-startup-id firefox
 exec --no-startup-id compton -cCGfF -o 0.38 -O 200 -I 200 -t 0 -l 0 -r 3 -D2 -m 0.88
 exec --no-startup-id /usr/lib/notify-osd-customizable/notify-osd
+exec --no-startup-id xautolock -locker pyxtrlock -time 5
+exec --no-startup-id parcellite
 
 
 # start a terminal
@@ -251,7 +253,7 @@ bindsym XF86AudioLowerVolume exec amixer -q set Master 2dB- unmute
 bindsym XF86AudioMute exec amixer -q set Master toggle
 
 ##  bindsym $MOD+SHIFT+x exec i3lock
-bindsym $MOD+SHIFT+x exec ~/.config/i3/i3lock
+bindsym $MOD+SHIFT+x exec --no-startup-id /bin/bash ~/.config/i3/i3lock
 
 # Setup randr settings
 bindsym $mod+F3 exec ~/.screenlayout/work.sh
