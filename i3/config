@@ -42,7 +42,8 @@ exec --no-startup-id setxkbmap de
 exec --no-startup-id compton -cCGfF -o 0.38 -O 200 -I 200 -t 0 -l 0 -r 3 -D2 -m 0.88
 exec --no-startup-id /usr/lib/notify-osd-customizable/notify-osd
 exec --no-startup-id xautolock -locker pyxtrlock -time 5
-exec --no-startup-id parcellite
+exec --no-startup-id clipit
+exec --no-startup-id redshift -c ~/.config/redshift.conf
 
 
 # start a terminal
@@ -59,6 +60,7 @@ bindsym $mod+shift+F3 exec --no-startup-id leafpad ~/.i3/config
 bindsym $mod+shift+F11 exec --no-startup-id lxappearance
 bindsym $mod+shift+F12 exec --no-startup-id nitrogen --sort=rtime
 bindsym $mod+shift+s exec xfce4-screenshooter
+
 
 
 
