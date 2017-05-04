@@ -175,3 +175,6 @@ nnoremap <silent> <Leader>< :exe "vertical resize -5"<CR>
 
 " vim-session settings
 let g:session_autosave = 'no'
+
+" Avoid the escape key
+imap ii <Esc>
