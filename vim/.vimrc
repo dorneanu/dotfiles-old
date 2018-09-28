@@ -179,3 +179,7 @@ let g:session_autosave = 'no'
 
 " Avoid the escape key
 imap ii <Esc>
+
+" vim-airline customization
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
