@@ -175,7 +175,8 @@ nnoremap <silent> <Leader>> :exe "vertical resize +5"<CR>
 nnoremap <silent> <Leader>< :exe "vertical resize -5"<CR>
 
 " vim-session settings
-let g:session_autosave = 'no'
+let g:session_autosave = 'yes'
+let g:session_autosave_periodic = 1
 
 " Avoid the escape key
 imap ii <Esc>
@@ -183,3 +184,7 @@ imap ii <Esc>
 " vim-airline customization
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
+
+" vim-go customization
+autocmd FileType go nmap <leader>b  <Plug>(go-build)
+autocmd FileType go nmap <leader>r  <Plug>(go-run)
