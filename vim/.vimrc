@@ -1,4 +1,4 @@
-set nocompatible              " be iMproved, required
+
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
@@ -31,6 +31,17 @@ Plugin 'hari-rangarajan/CCTree'
 Plugin 'terryma/vim-expand-region'
 Plugin 'dhruvasagar/vim-table-mode'
 Plugin 'fatih/vim-go'
+Plugin 'w0rp/ale'
+Plugin 'zchee/deoplete-go', {'do': 'make'}
+Plugin 'Shougo/deoplete.nvim'
+Plugin 'roxma/nvim-yarp'
+Plugin 'roxma/vim-hug-neovim-rpc'
+Plugin 'AndrewRadev/splitjoin.vim'
+Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
+Plugin 'tpope/vim-surround'
+
+" Auto-close
+Plugin 'Townk/vim-autoclose'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -39,9 +50,7 @@ filetype plugin indent on    " required
 "filetype plugin on
 "
 " Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginList       - lists configured plugins " :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate " :PluginSearch foo - searches for foo; append `!` to refresh local cache
 " :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
 "
 " see :h vundle for more details or wiki for FAQ
@@ -108,7 +117,7 @@ if executable('ag')
   let g:ctrlp_use_caching = 0
   
   " bind \ (backward slash) to grep shortcut
-  command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
+  command -nargs=+ -complete=file -bar Ag silent! grep! <args>|botright cwindow|redraw!
   nnoremap \ :Ag<SPACE>
 endif
 
@@ -148,10 +157,13 @@ au BufEnter /* call LoadCscope()
 nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
 
 " Easy split navigations
-nnoremap <C-J> <C-W><C-J>
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-nnoremap <C-H> <C-W><C-H>
+nnoremap <Space>j <C-W><C-J>
+nnoremap <Space>k <C-W><C-K>
+nnoremap <Space>l <C-W><C-L>
+nnoremap <Space>h <C-W><C-H>
+
+" Ctrl-P
+nnoremap <Space>p :CtrlP<CR>
 
 " Leader settings
 let mapleader = ","
@@ -174,6 +186,10 @@ nnoremap <silent> <Leader>- :exe "resize -5"<CR>
 nnoremap <silent> <Leader>> :exe "vertical resize +5"<CR>
 nnoremap <silent> <Leader>< :exe "vertical resize -5"<CR>
 
+" Stay in normal mode after inserting new line
+nnoremap o o<Esc>
+nnoremap O O<Esc>
+
 " vim-session settings
 let g:session_autosave = 'yes'
 let g:session_autosave_periodic = 1
@@ -188,3 +204,36 @@ let g:airline_powerline_fonts = 1
 " vim-go customization
 autocmd FileType go nmap <leader>b  <Plug>(go-build)
 autocmd FileType go nmap <leader>r  <Plug>(go-run)
+
+au FileType go set noexpandtab
+au FileType go set shiftwidth=4
+au FileType go set softtabstop=4
+au FileType go set tabstop=4
+
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_types = 1
+let g:go_auto_sameids = 1
+let g:go_auto_type_info = 1
+
+"" Autoimport dependencies
+let g:go_fmt_command = "goimports"
+
+"" Error and warning signs.
+let g:ale_sign_error = '⤫'
+let g:ale_sign_warning = '⚠'
+
+"" Enable integration with airline.
+let g:airline#extensions#ale#enabled = 1
+
+"" Enable deoplete
+" deoplete.nvim recommend
+set completeopt+=noselect
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#sources#go#gocode_binary = "~/go/bin/gocode"
+let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
