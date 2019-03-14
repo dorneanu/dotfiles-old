@@ -19,7 +19,7 @@ Plugin 'tpope/vim-fugitive'
 " Own plugins
 Plugin 'Elive/vim-colorscheme-elive'
 Plugin 'scrooloose/nerdtree'
-Plugin 'kien/ctrlp.vim'
+" Plugin 'kien/ctrlp.vim'
 Plugin 'andviro/flake8-vim'
 " Plugin 'scrooloose/syntastic'
 Plugin 'majutsushi/tagbar'
@@ -32,16 +32,27 @@ Plugin 'terryma/vim-expand-region'
 Plugin 'dhruvasagar/vim-table-mode'
 Plugin 'fatih/vim-go'
 Plugin 'w0rp/ale'
-Plugin 'zchee/deoplete-go', {'do': 'make'}
-Plugin 'Shougo/deoplete.nvim'
 Plugin 'roxma/nvim-yarp'
 Plugin 'roxma/vim-hug-neovim-rpc'
 Plugin 'AndrewRadev/splitjoin.vim'
 Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
 Plugin 'tpope/vim-surround'
+Plugin 'airblade/vim-gitgutter'
+
+" Autocompletion
+Plugin 'Valloric/YouCompleteMe'
+" Plugin 'Shougo/deoplete.nvim'
+" Plugin 'deoplete-plugins/deoplete-jedi'
+
+" Python plugins
+Plugin 'vim-scripts/indentpython.vim'
+Plugin 'tell-k/vim-autopep8'
 
 " Auto-close
 Plugin 'Townk/vim-autoclose'
+
+" FZF
+Plugin 'junegunn/fzf.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -101,9 +112,9 @@ map <F5> :NERDTreeFocus<CR>
  nnoremap <silent> <F9> :TagbarToggle<CR>
 
 " CtrlP settings
-let g:ctrlp_match_window = 'bottom,order:ttb'
-let g:ctrlp_switch_buffer = 0
-let g:ctrlp_working_path_mode = 0
+" let g:ctrlp_match_window = 'bottom,order:ttb'
+" let g:ctrlp_switch_buffer = 0
+" let g:ctrlp_working_path_mode = 0
 
 " The Silver Searcher
 if executable('ag')
@@ -163,11 +174,11 @@ nnoremap <Space>l <C-W><C-L>
 nnoremap <Space>h <C-W><C-H>
 
 " Ctrl-P
-nnoremap <Space>p :CtrlP<CR>
+" nnoremap <Space>p :CtrlP<CR>
 
 " Leader settings
 let mapleader = ","
-nnoremap <Leader>o :CtrlP<CR>
+" nnoremap <Leader>o :CtrlP<CR>
 nnoremap <Leader>w :w<CR>
 nnoremap <Leader>q :q<CR>
 vmap <Leader>y "+y
@@ -237,3 +248,90 @@ set completeopt+=noselect
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary = "~/go/bin/gocode"
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+
+"" Python settings
+" Add proper PEP8 indentation
+" au BufNewFile,BufRead *.py 
+"     \ set tabstop=4 |
+"     \ set softtabstop=4 |
+"     \ set shiftwidth=4 |
+"     \ set textwidth=119 |
+"     \ set expandtab |
+"     \ set autoindent |
+"     \ set fileformat=unix
+
+" Auto-format using autopep8
+let g:autopep8_on_save = 1
+let g:autopep8_disable_show_diff=1
+
+" Ignore specific flake8 errors
+let g:flake8_ignore="F405,E501"
+
+"" YouCompleteMe
+let g:ycm_autoclose_preview_window_after_completion=1
+nnoremap <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
+autocmd CmdwinEnter * inoremap <expr><buffer> <TAB>
+
+"" FZF
+"" Run fzf command
+nnoremap <Space>p :GitFiles<CR>
+
+"" Search lines in all open vim buffers
+function! s:line_handler(l)
+  let keys = split(a:l, ':\t')
+  exec 'buf' keys[0]
+  exec keys[1]
+  normal! ^zz
+endfunction
+
+function! s:buffer_lines()
+  let res = []
+  for b in filter(range(1, bufnr('$')), 'buflisted(v:val)')
+    call extend(res, map(getbufline(b,0,"$"), 'b . ":\t" . (v:key + 1) . ":\t" . v:val '))
+  endfor
+  return res
+endfunction
+
+command! FZFLines call fzf#run({
+\   'source':  <sid>buffer_lines(),
+\   'sink':    function('<sid>line_handler'),
+\   'options': '--extended --nth=3..',
+\   'down':    '60%'
+\})
+
+"" Narrow ag results within vim
+function! s:ag_to_qf(line)
+  let parts = split(a:line, ':')
+  return {'filename': parts[0], 'lnum': parts[1], 'col': parts[2],
+        \ 'text': join(parts[3:], ':')}
+endfunction
+
+function! s:ag_handler(lines)
+  if len(a:lines) < 2 | return | endif
+
+  let cmd = get({'ctrl-x': 'split',
+               \ 'ctrl-v': 'vertical split',
+               \ 'ctrl-t': 'tabe'}, a:lines[0], 'e')
+  let list = map(a:lines[1:], 's:ag_to_qf(v:val)')
+
+  let first = list[0]
+  execute cmd escape(first.filename, ' %#\')
+  execute first.lnum
+  execute 'normal!' first.col.'|zz'
+
+  if len(list) > 1
+    call setqflist(list)
+    copen
+    wincmd p
+  endif
+endfunction
+
+command! -nargs=* Ag call fzf#run({
+\ 'source':  printf('ag --nogroup --column --color "%s"',
+\                   escape(empty(<q-args>) ? '^(?=.)' : <q-args>, '"\')),
+\ 'sink*':    function('<sid>ag_handler'),
+\ 'options': '--ansi --expect=ctrl-t,ctrl-v,ctrl-x --delimiter : --nth 4.. '.
+\            '--multi --bind=ctrl-a:select-all,ctrl-d:deselect-all '.
+\            '--color hl:68,hl+:110',
+\ 'down':    '50%'
+\ })

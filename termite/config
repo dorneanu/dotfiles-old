@@ -13,7 +13,7 @@ scrollback_lines = 1000
 search_wrap = true
 cursor_blink = system
 cursor_shape = block
-font = Monospace 11
+font = Monospace 10
 # font = Monospace 14
 browser = opera
 
