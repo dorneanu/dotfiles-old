@@ -18,6 +18,9 @@ Plugin 'tpope/vim-fugitive'
 
 " Own plugins
 Plugin 'Elive/vim-colorscheme-elive'
+Plugin 'lifepillar/vim-solarized8'
+Plugin 'NLKNguyen/papercolor-theme'
+
 Plugin 'scrooloose/nerdtree'
 " Plugin 'kien/ctrlp.vim'
 Plugin 'andviro/flake8-vim'
@@ -35,12 +38,12 @@ Plugin 'w0rp/ale'
 Plugin 'roxma/nvim-yarp'
 Plugin 'roxma/vim-hug-neovim-rpc'
 Plugin 'AndrewRadev/splitjoin.vim'
-Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
+" Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
 Plugin 'tpope/vim-surround'
 Plugin 'airblade/vim-gitgutter'
 
 " Autocompletion
-Plugin 'Valloric/YouCompleteMe'
+" Plugin 'Valloric/YouCompleteMe'
 " Plugin 'Shougo/deoplete.nvim'
 " Plugin 'deoplete-plugins/deoplete-jedi'
 
@@ -53,6 +56,9 @@ Plugin 'Townk/vim-autoclose'
 
 " FZF
 Plugin 'junegunn/fzf.vim'
+
+" org mode
+Plugin 'jceb/vim-orgmode'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -68,7 +74,10 @@ filetype plugin indent on    " required
 " Put your non-Plugin stuff after this line
 
 syntax enable
-colorscheme elive
+set t_Co=256
+" colorscheme elive
+set background=dark
+colorscheme PaperColor
 
 " Misc {{{
 set ttyfast                     " faster redraw
@@ -244,10 +253,10 @@ let g:airline#extensions#ale#enabled = 1
 
 "" Enable deoplete
 " deoplete.nvim recommend
-set completeopt+=noselect
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#sources#go#gocode_binary = "~/go/bin/gocode"
-let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+" set completeopt+=noselect
+" let g:deoplete#enable_at_startup = 1
+" let g:deoplete#sources#go#gocode_binary = "~/go/bin/gocode"
+" let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 
 "" Python settings
 " Add proper PEP8 indentation
@@ -261,16 +270,17 @@ let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const
 "     \ set fileformat=unix
 
 " Auto-format using autopep8
-let g:autopep8_on_save = 1
+" let g:autopep8_on_save = 1
 let g:autopep8_disable_show_diff=1
+let g:autopep8_max_line_length=120
 
 " Ignore specific flake8 errors
 let g:flake8_ignore="F405,E501"
 
 "" YouCompleteMe
-let g:ycm_autoclose_preview_window_after_completion=1
-nnoremap <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
-autocmd CmdwinEnter * inoremap <expr><buffer> <TAB>
+" let g:ycm_autoclose_preview_window_after_completion=1
+" nnoremap <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
+" autocmd CmdwinEnter * inoremap <expr><buffer> <TAB>
 
 "" FZF
 "" Run fzf command
@@ -335,3 +345,15 @@ command! -nargs=* Ag call fzf#run({
 \            '--color hl:68,hl+:110',
 \ 'down':    '50%'
 \ })
+
+"" Call BTags
+nnoremap <space>b :BTags <CR>
+
+"" Customizations
+"" Replace variable names
+
+" For local replace
+nnoremap gr gd[{V%::s/<C-R>///gc<left><left><left>}
+
+" For global replace
+ nnoremap gR gD:%s/<C-R>///gc<left><left><left>
