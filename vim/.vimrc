@@ -352,6 +352,9 @@ nnoremap <space>b :BTags <CR>
 "" Customizations
 "" Replace variable names
 
+" Toggle highlighting
+nnoremap <Leader>h :set cursorline!<CR>
+
 " For local replace
 nnoremap gr gd[{V%::s/<C-R>///gc<left><left><left>}
 
