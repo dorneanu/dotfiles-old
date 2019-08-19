@@ -1,4 +1,4 @@
-
+set nocompatible
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
@@ -20,13 +20,15 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'Elive/vim-colorscheme-elive'
 Plugin 'lifepillar/vim-solarized8'
 Plugin 'NLKNguyen/papercolor-theme'
+Plugin 'morhetz/gruvbox'
 
 Plugin 'scrooloose/nerdtree'
 " Plugin 'kien/ctrlp.vim'
-Plugin 'andviro/flake8-vim'
+" Plugin 'andviro/flake8-vim'
 " Plugin 'scrooloose/syntastic'
 Plugin 'majutsushi/tagbar'
 Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 Plugin 'kshenoy/vim-signature'
 Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-session'
@@ -34,7 +36,7 @@ Plugin 'hari-rangarajan/CCTree'
 Plugin 'terryma/vim-expand-region'
 Plugin 'dhruvasagar/vim-table-mode'
 Plugin 'fatih/vim-go'
-Plugin 'w0rp/ale'
+Plugin 'dense-analysis/ale'
 Plugin 'roxma/nvim-yarp'
 Plugin 'roxma/vim-hug-neovim-rpc'
 Plugin 'AndrewRadev/splitjoin.vim'
@@ -48,8 +50,8 @@ Plugin 'airblade/vim-gitgutter'
 " Plugin 'deoplete-plugins/deoplete-jedi'
 
 " Python plugins
-Plugin 'vim-scripts/indentpython.vim'
-Plugin 'tell-k/vim-autopep8'
+" Plugin 'vim-scripts/indentpython.vim'
+" Plugin 'tell-k/vim-autopep8'
 
 " Auto-close
 Plugin 'Townk/vim-autoclose'
@@ -74,10 +76,13 @@ filetype plugin indent on    " required
 " Put your non-Plugin stuff after this line
 
 syntax enable
-set t_Co=256
+" set t_Co=256
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+set termguicolors
 " colorscheme elive
-set background=dark
-colorscheme PaperColor
+set background=light
+colorscheme gruvbox
 
 " Misc {{{
 set ttyfast                     " faster redraw
@@ -251,6 +256,10 @@ let g:ale_sign_warning = '⚠'
 "" Enable integration with airline.
 let g:airline#extensions#ale#enabled = 1
 
+let g:ale_linters = {
+\   'python': ['flake8', 'mypy', 'pylint', 'pyls'],
+\}
+
 "" Enable deoplete
 " deoplete.nvim recommend
 " set completeopt+=noselect
@@ -275,7 +284,7 @@ let g:autopep8_disable_show_diff=1
 let g:autopep8_max_line_length=120
 
 " Ignore specific flake8 errors
-let g:flake8_ignore="F405,E501"
+" let g:flake8_ignore="F405,E501"
 
 "" YouCompleteMe
 " let g:ycm_autoclose_preview_window_after_completion=1
@@ -360,3 +369,6 @@ nnoremap gr gd[{V%::s/<C-R>///gc<left><left><left>}
 
 " For global replace
  nnoremap gR gD:%s/<C-R>///gc<left><left><left>
+
+ " Gruvbox customizations
+ let g:gruvbox_contrast_light="hard"
