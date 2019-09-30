@@ -44,6 +44,14 @@ Plugin 'AndrewRadev/splitjoin.vim'
 Plugin 'tpope/vim-surround'
 Plugin 'airblade/vim-gitgutter'
 
+" Yaml plugin
+Plugin 'mrk21/yaml-vim' 
+
+" Snippets
+Plugin 'Shougo/deoplete.nvim'
+Plugin 'Shougo/neosnippet.vim'
+Plugin 'Shougo/neosnippet-snippets'
+
 " Autocompletion
 " Plugin 'Valloric/YouCompleteMe'
 " Plugin 'Shougo/deoplete.nvim'
@@ -81,7 +89,7 @@ let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 set termguicolors
 " colorscheme elive
-set background=light
+set background=dark
 colorscheme gruvbox
 
 " Misc {{{
@@ -187,6 +195,12 @@ nnoremap <Space>k <C-W><C-K>
 nnoremap <Space>l <C-W><C-L>
 nnoremap <Space>h <C-W><C-H>
 
+" Navigate in insert mode without arrow keys
+inoremap <c-k> <up>
+inoremap <c-j> <down>
+inoremap <c-h> <left>
+inoremap <c-l> <right>
+
 " Ctrl-P
 " nnoremap <Space>p :CtrlP<CR>
 
@@ -245,9 +259,13 @@ let g:go_highlight_structs = 1
 let g:go_highlight_types = 1
 let g:go_auto_sameids = 1
 let g:go_auto_type_info = 1
+set updatetime=100
 
 "" Autoimport dependencies
 let g:go_fmt_command = "goimports"
+
+" Add snippet engine
+let g:go_snippet_engine = "neosnippet"
 
 "" Error and warning signs.
 let g:ale_sign_error = '⤫'
@@ -368,7 +386,22 @@ nnoremap <Leader>h :set cursorline!<CR>
 nnoremap gr gd[{V%::s/<C-R>///gc<left><left><left>}
 
 " For global replace
- nnoremap gR gD:%s/<C-R>///gc<left><left><left>
+nnoremap gR gD:%s/<C-R>///gc<left><left><left>
 
- " Gruvbox customizations
- let g:gruvbox_contrast_light="hard"
+" Gruvbox customizations
+let g:gruvbox_contrast_light="hard"
+
+" add yaml stuffs
+au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
+" neosnippets configuration
+let g:go_snippet_engine = "neosnippet"
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+  \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+  \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+let g:neosnippet#snippets_directory='~/.vim/bundle/vim-go/gosnippets/snippets'
