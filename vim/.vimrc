@@ -37,11 +37,11 @@ Plugin 'terryma/vim-expand-region'
 Plugin 'dhruvasagar/vim-table-mode'
 Plugin 'fatih/vim-go'
 Plugin 'dense-analysis/ale'
-Plugin 'roxma/nvim-yarp'
-Plugin 'roxma/vim-hug-neovim-rpc'
+" Plugin 'roxma/nvim-yarp'
+" Plugin 'roxma/vim-hug-neovim-rpc'
 Plugin 'AndrewRadev/splitjoin.vim'
 " Plugin 'mdempsky/gocode', {'rtp': 'vim/'}
-Plugin 'tpope/vim-surround'
+" Plugin 'tpope/vim-surround'
 Plugin 'airblade/vim-gitgutter'
 
 " Yaml plugin
@@ -62,13 +62,17 @@ Plugin 'Shougo/neosnippet-snippets'
 " Plugin 'tell-k/vim-autopep8'
 
 " Auto-close
-Plugin 'Townk/vim-autoclose'
+" Plugin 'Townk/vim-autoclose'
+Plugin 'jiangmiao/auto-pairs'
 
 " FZF
 Plugin 'junegunn/fzf.vim'
 
 " org mode
 Plugin 'jceb/vim-orgmode'
+
+" unit testing
+Plugin 'janko/vim-test'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -249,6 +253,11 @@ au FileType go set shiftwidth=4
 au FileType go set softtabstop=4
 au FileType go set tabstop=4
 
+au Filetype go nmap <leader>ga <Plug>(go-alternate-edit)
+au Filetype go nmap <leader>gah <Plug>(go-alternate-split)
+au Filetype go nmap <leader>gav <Plug>(go-alternate-vertical)
+au Filetype go nmap <leader>t :GoTest <cr>
+
 let g:go_highlight_build_constraints = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_fields = 1
@@ -275,7 +284,7 @@ let g:ale_sign_warning = '⚠'
 let g:airline#extensions#ale#enabled = 1
 
 let g:ale_linters = {
-\   'python': ['flake8', 'mypy', 'pylint', 'pyls'],
+\   'python': ['flake8', 'pycodestyle'],
 \}
 
 "" Enable deoplete
@@ -397,11 +406,40 @@ autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
 " neosnippets configuration
 let g:go_snippet_engine = "neosnippet"
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+imap <C-i>     <Plug>(neosnippet_expand_or_jump)
+smap <C-i>     <Plug>(neosnippet_expand_or_jump)
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
   \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
   \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
-let g:neosnippet#snippets_directory='~/.vim/bundle/vim-go/gosnippets/snippets'
+let g:neosnippet#snippets_directory='~/.vim/bundle/vim-go/gosnippets/snippets, ~/.vim/bundle/neosnippet-snippets/neosnippets'
+
+" Quickfix window settings
+au FileType qf call AdjustWindowHeight(3, 10)
+function! AdjustWindowHeight(minheight, maxheight)
+   let l = 1
+   let n_lines = 0
+   let w_width = winwidth(0)
+   while l <= line('$')
+	   " number to float for division
+	   let l_len = strlen(getline(l)) + 0.0
+	   let line_width = l_len/w_width
+	   let n_lines += float2nr(ceil(line_width))
+	   let l += 1
+   endw
+   exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
+endfunction
+
+"" open quickfix window at the bottom
+autocmd FileType qf wincmd J
+
+"" Fix arrow problems
+nnoremap <silent> <ESC>OA <UP>
+nnoremap <silent> <ESC>OB <DOWN>
+nnoremap <silent> <ESC>OC <RIGHT>
+nnoremap <silent> <ESC>OD <LEFT>
+inoremap <silent> <ESC>OA <UP>
+inoremap <silent> <ESC>OB <DOWN>
+inoremap <silent> <ESC>OC <RIGHT>
+inoremap <silent> <ESC>OD <LEFT>
