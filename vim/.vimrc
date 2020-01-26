@@ -70,6 +70,11 @@ Plugin 'junegunn/fzf.vim'
 
 " org mode
 Plugin 'jceb/vim-orgmode'
+Plugin 'tpope/vim-speeddating'
+let g:org_agenda_files = ['~/sync/org/*.org']
+let g:org_todo_keywords = [['TODO(t)', 'STARTED(s)', '|', 'DONE(d)'],
+    \ ['REPORT(r)', 'BUG(b)', 'KNOWNCAUSE(k)', '|', 'FIXED(f)'],
+    \ ['CANCELED(c)']]
 
 " unit testing
 Plugin 'janko/vim-test'
@@ -284,8 +289,16 @@ let g:ale_sign_warning = '⚠'
 let g:airline#extensions#ale#enabled = 1
 
 let g:ale_linters = {
-\   'python': ['flake8', 'pycodestyle'],
-\}
+    \   'python': ['flake8', 'pycodestyle'],
+    \   'go': ['govet', 'gofmt', 'golint', 'goimports']
+    \}
+
+let g:ale_fixers = {
+    \   'python': ['autopep8'],
+    \   'go': ['gofmt']
+    \}
+
+let g:ale_fix_on_save = 1
 
 "" Enable deoplete
 " deoplete.nvim recommend
