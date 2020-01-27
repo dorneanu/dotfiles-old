@@ -324,9 +324,13 @@ you should place your code here."
   (with-eval-after-load 'org
     ;; here goes your Org config :)
     ;; ....
+    (require 'org-tempo)
+
+    ;; org settings
     (setq org-journal-file-format "%Y-%m-%d")
 
     (setq org-dir "~/sync/org/")
+    (setq org-archive-location (concat org-dir "archives.org::"))
     (setq org-log-done t)
     (setq org-agenda-files (directory-files-recursively org-dir "\.org$"))
     (setq org-default-notes-file (concat org-dir "topics/notes.org"))
