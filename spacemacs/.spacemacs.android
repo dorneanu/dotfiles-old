@@ -42,10 +42,10 @@ values."
      ;; better-defaults
      emacs-lisp
      git
-     go
-     (go :variables go-tab-width 4)
-     (go :variables go-format-before-save t)
-     (go :variables godoc-at-point-function 'godoc-gogetdoc)
+     ;; go
+     ;; (go :variables go-tab-width 4)
+     ;; (go :variables go-format-before-save t)
+     ;; (go :variables godoc-at-point-function 'godoc-gogetdoc)
      markdown
      org
      neotree
@@ -326,7 +326,8 @@ you should place your code here."
     ;; ....
     (setq org-journal-file-format "%Y-%m-%d")
 
-    (setq org-dir "~/sync/org/")
+    (setq org-dir "/sdcard/org-sync/")
+    (setq org-archive-location "/sdcard/org-sync/archives.org::")
     (setq org-log-done t)
     (setq org-agenda-files (directory-files-recursively org-dir "\.org$"))
     (setq org-default-notes-file (concat org-dir "topics/notes.org"))
