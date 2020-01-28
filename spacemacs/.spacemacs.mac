@@ -37,6 +37,7 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
+     twitter
      helm
      auto-completion
      ;; better-defaults
@@ -51,6 +52,15 @@ values."
      org
      neotree
      tmux
+     gtags
+     elfeed
+     ;; configure elfeed
+     (elfeed :variables rmh-elfeed-org-files (list "~/sync/org/elfeed1.org"
+                                                   "~/sync/org/elfeed2.org"))
+     (elfeed :variables
+             elfeed-feeds '(("https://www.heise.de/rss/heise-atom.xml" news)
+                            ("https://golangweekly.com/rss/25mg1iko" golang)))
+
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -65,6 +75,10 @@ values."
    dotspacemacs-additional-packages
    '(
      gruvbox-theme
+     pocket-reader
+     ht
+     helm-org-rifle
+     elfeed
     )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -325,11 +339,22 @@ you should place your code here."
   (spacemacs/load-theme 'gruvbox)
   (load-theme 'gruvbox-dark-medium)
 
+  ;; save password for twitter
+  (setq twittering-use-master-password t)
+
+
+  ;; load right versio of ht package
+  (load-library "ht")
+
+  ;; disable evil-mode for pocket-reader-mode
+  (add-to-list 'evil-emacs-state-modes 'pocket-reader-mode)
+
   ;; org stuff
   (with-eval-after-load 'org
     ;; here goes your Org config :)
     ;; ....
     (require 'org-tempo)
+    (require 'helm-org-rifle)
 
     ;; Replace org-set-tags with org-set-tags-command in keybinding
     (spacemacs/set-leader-keys-for-major-mode 'org-mode ":" 'org-set-tags-command)
@@ -345,6 +370,24 @@ you should place your code here."
 
     ;; Don't insert blank lines before headings
     (setf org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
+
+    ;; Define captures here
+    (setq org-capture-templates
+          '(("t" "Todo" entry (file+headline "~/sync/org/inbox.org" "Tasks")
+             "* TODO %?\n  %U\n  %i\n  %a")
+
+            ("s" "Code Snippet" entry
+             (file+headline "~/sync/org/inbox.org" "Snippets")
+             "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
+
+            ("j" "Journal" entry (file+datetree "~/sync/org/journal.org")
+             "* %?\nEntered on %U\n  %i\n  %a")))
+
+    ;; refile setup
+    (setq org-refile-targets '((org-agenda-files :maxlevel . 9)))
+    (setq org-refile-use-outline-path 'file)
+    (setq org-outline-path-complete-in-steps nil)
+    (setq org-refile-allow-creating-parent-nodes 'confirm)
 
     ;; Set todo keywords
     (setq org-todo-keywords
@@ -385,6 +428,7 @@ you should place your code here."
     (setq org-fast-tag-selection-single-key (quote expert))
   )
 
+
   ;; navigate between windows using ctrl + hjkl
   (define-key global-map (kbd "C-h") #'evil-window-left)
   (define-key global-map (kbd "C-j") #'evil-window-down)
@@ -405,7 +449,7 @@ you should place your code here."
  '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
    (quote
-    (gruvbox-theme autothemer gruvbox-theme-theme yaml-mode smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup htmlize helm-gitignore helm-company helm-c-yasnippet go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit git-commit with-editor transient company-statistics company-go go-mode company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet elfeed twittering-mode helm-org-rifle pocket-reader ht org-web-tools rainbow-identifiers ov pocket-lib kv esxml helm-gtags ggtags gruvbox-theme autothemer gruvbox-theme-theme yaml-mode smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup htmlize helm-gitignore helm-company helm-c-yasnippet go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit git-commit with-editor transient company-statistics company-go go-mode company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
