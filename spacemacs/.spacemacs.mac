@@ -61,6 +61,7 @@ values."
              elfeed-feeds '(("https://www.heise.de/rss/heise-atom.xml" news)
                             ("https://golangweekly.com/rss/25mg1iko" golang)))
 
+     org-jira
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -79,6 +80,8 @@ values."
      ht
      helm-org-rifle
      elfeed
+     org-jira
+     org-super-agenda
     )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -342,6 +345,11 @@ you should place your code here."
   ;; save password for twitter
   (setq twittering-use-master-password t)
 
+  ;; set jira token
+  (defconst jiralib-token `("Cookie" . ,(getenv "JIRA_TOKEN")))
+
+  ;; (setq jiralib-token ("Cookie" . jira-token))
+  (setq jiralib-url (getenv "JIRA_HOST"))
 
   ;; load right versio of ht package
   (load-library "ht")
@@ -356,6 +364,47 @@ you should place your code here."
     (require 'org-tempo)
     (require 'helm-org-rifle)
 
+    ;; Configure org-super-agenda
+    (require 'org-super-agenda)
+    (org-super-agenda-mode t)
+    (setq org-agenda-custom-commands
+          '(("z" "Custom view"
+             ((agenda "" ((org-agenda-span 'day)
+                          (org-super-agenda-groups
+                           '((:name "Today"
+                                    :time-grid t
+                                    :date today
+                                    :todo "TODAY"
+                                    :scheduled today
+                                    :order 1)))))
+              (alltodo "" ((org-agenda-overriding-header "")
+                           (org-super-agenda-groups
+                            '((:name "Important"
+                                   :tag "Important"
+                                   :priority "A"
+                                   :order 2)
+                              (:name "Next to do"
+                                     :todo "NEXT"
+                                     :order 5)
+                              (:name "Personal"
+                                     :tag "@personal"
+                                     :order 10)
+                              (:name "Home"
+                                     :tag "@home"
+                                     :order 1i)
+                              (:name "Work"
+                                     :tag "@work"
+                                     :order 15)
+                              (:name "To read"
+                                     :tag "Read"
+                                     :order 30)
+                              (:name "Waiting"
+                                     :todo "WAITING"
+                                     :order 40)
+                              (:name "Due Today"
+                                     :deadline today
+                                     :order 2)
+                              ))))))))
     ;; Replace org-set-tags with org-set-tags-command in keybinding
     (spacemacs/set-leader-keys-for-major-mode 'org-mode ":" 'org-set-tags-command)
     ;; org settings
@@ -368,20 +417,26 @@ you should place your code here."
     (setq org-default-notes-file (concat org-dir "topics/notes.org"))
     (global-set-key (kbd "C-c c") 'org-capture)
 
+    ;; configure org-projectile
+    (require 'org-projectile)
+    (org-projectile-per-project)
+    (setq org-projectile-per-project-filepath "TODO.org")
+    (setq org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
+
     ;; Don't insert blank lines before headings
     (setf org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
 
     ;; Define captures here
     (setq org-capture-templates
           '(("t" "Todo" entry (file+headline "~/sync/org/inbox.org" "Tasks")
-             "* TODO %?\n  %U\n  %i\n  %a")
+             "* TODO  %?\n")
 
             ("s" "Code Snippet" entry
              (file+headline "~/sync/org/inbox.org" "Snippets")
              "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
 
             ("j" "Journal" entry (file+datetree "~/sync/org/journal.org")
-             "* %?\nEntered on %U\n  %i\n  %a")))
+             "*  %?\n")))
 
     ;; refile setup
     (setq org-refile-targets '((org-agenda-files :maxlevel . 9)))
@@ -426,6 +481,7 @@ you should place your code here."
 
     ;; Allow setting single tags without the menu
     (setq org-fast-tag-selection-single-key (quote expert))
+
   )
 
 
@@ -447,9 +503,12 @@ you should place your code here."
    (quote
     ("8f97d5ec8a774485296e366fdde6ff5589cf9e319a584b845b6f7fa788c9fa9a" default)))
  '(evil-want-Y-yank-to-eol nil)
+ '(org-agenda-files
+   (quote
+    ("/home/victor/sync/org/archives.org" "/home/victor/sync/org/bookmarks.org" "/home/victor/sync/org/bookmarks2.org" "/home/victor/sync/org/books.org" "/home/victor/sync/org/elfeed1.org" "/home/victor/sync/org/elfeed2.org" "/home/victor/sync/org/inbox.org" "/home/victor/sync/org/journal.org" "/home/victor/sync/org/notes.org" "/home/victor/sync/org/projects_private.org" "/home/victor/sync/org/projects_work.org" "/home/victor/sync/org/quotes.org" "/home/victor/sync/org/quotes2.org" "/home/victor/sync/org/tickler.org" "/home/victor/sync/org/topics_aws.org" "/home/victor/sync/org/topics_go.org" "/home/victor/sync/org/topics_notes.org" "/home/victor/sync/org/topics_org.org" "/home/victor/sync/org/topics_security.org" "/home/victor/sync/org/topics_spacemacs.org" "~/go/src/github.com/Scout24/codestripper/TODO.org" "~/work/repos/checkruns-poc/TODO.org")))
  '(package-selected-packages
    (quote
-    (elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet elfeed twittering-mode helm-org-rifle pocket-reader ht org-web-tools rainbow-identifiers ov pocket-lib kv esxml helm-gtags ggtags gruvbox-theme autothemer gruvbox-theme-theme yaml-mode smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup htmlize helm-gitignore helm-company helm-c-yasnippet go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit git-commit with-editor transient company-statistics company-go go-mode company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (org-super-agenda ts org-jira elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet elfeed twittering-mode helm-org-rifle pocket-reader ht org-web-tools rainbow-identifiers ov pocket-lib kv esxml helm-gtags ggtags gruvbox-theme autothemer gruvbox-theme-theme yaml-mode smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup htmlize helm-gitignore helm-company helm-c-yasnippet go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit git-commit with-editor transient company-statistics company-go go-mode company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
