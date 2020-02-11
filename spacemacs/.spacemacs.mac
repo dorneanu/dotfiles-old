@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     javascript
      rust
      yaml
      ;; ----------------------------------------------------------------
@@ -41,6 +42,19 @@ values."
      twitter
      helm
      auto-completion
+     (auto-completion :variables
+                      auto-completion-return-key-behavior 'complete
+                      auto-completion-tab-key-behavior 'cycle
+                      auto-completion-complete-with-key-sequence nil
+                      auto-completion-complete-with-key-sequence-delay 0.1
+                      auto-completion-idle-delay 0.2
+                      auto-completion-private-snippets-directory nil
+                      auto-completion-enable-snippets-in-popup t
+                      auto-completion-enable-help-tooltip 'manual
+                      auto-completion-use-company-box nil
+                      auto-completion-enable-sort-by-usage nil)
+     yasnippet
+     helm-c-yasnippet
      ;; better-defaults
      emacs-lisp
      git
@@ -365,6 +379,14 @@ you should place your code here."
   ;; disable evil-mode for pocket-reader-mode
   (add-to-list 'evil-emacs-state-modes 'pocket-reader-mode)
 
+  ;; add yasnippet support
+  (require 'yasnippet)
+  (require 'helm-c-yasnippet)
+  (setq helm-yas-space-match-any-greedy t)
+  (global-set-key (kbd "C-c y") 'helm-yas-complete)
+  (yas-global-mode 1)
+  (yas-load-directory "~/.emacs.d/private/snippets")
+
   ;; add hugo support
   (use-package ox-hugo
     :after ox)
@@ -374,6 +396,9 @@ you should place your code here."
     ;; here goes your Org config :)
     ;; ....
 
+    ;; set tag inheritance
+    (setq org-use-tag-inheritance t)
+
     ;; start agenda with monday
     (setq org-agenda-start-on-weekday 1)
 
@@ -382,6 +407,12 @@ you should place your code here."
 
     ;; enable hugo support
     (require 'ox-hugo)
+    ;; define function add adding properties to a heading
+    (defun jv-ox-prop ()
+      (interactive)
+      (org-set-property "EXPORT_FILE_NAME" 
+      (org-hugo-slug (org-get-heading :no-tags :no-todo))))
+    (spacemacs/set-leader-keys-for-major-mode 'org-mode "p" 'jv-ox-prop)
 
     ;; Configure org-super-agenda
     (require 'org-super-agenda)
@@ -451,7 +482,7 @@ you should place your code here."
              "* TODO  %?\n")
 
             ("m" "Meeting" entry (file+headline "~/sync/org/inbox.org" "Meetings")
-             "* MEETING  %?\n")
+             "* MEETING  %?\nSCHEDULED: %t\n%U\n%a\n")
 
             ("s" "Code Snippet" entry
              (file+headline "~/sync/org/inbox.org" "Snippets")
@@ -479,7 +510,7 @@ you should place your code here."
             ("MEETING" . (:foreground "forest green" :weight bold))
             ("STARTED" . (:foreground "OrangeRed" :weight bold))
             ("WAITING" . (:foreground "coral" :weight bold))
-            ("CANCELED" . (:foreground "LimeGreen" :weight bold))
+            ("CANCELED" . (:foreground "Red" :weight bold))
             ("DELEGATED" . (:foreground "LimeGreen" :weight bold))
             ("SOMEDAY" . (:foreground "LimeGreen" :weight bold))
             ("BUG" . (:foreground "Orange" :weight bold))
@@ -526,15 +557,17 @@ you should place your code here."
    (quote
     ("8f97d5ec8a774485296e366fdde6ff5589cf9e319a584b845b6f7fa788c9fa9a" default)))
  '(evil-want-Y-yank-to-eol nil)
+ '(helm-completion-style (quote emacs))
  '(org-agenda-files
    (quote
-    ("/home/victor/sync/org/archives.org" "/home/victor/sync/org/bookmarks.org" "/home/victor/sync/org/bookmarks2.org" "/home/victor/sync/org/books.org" "/home/victor/sync/org/elfeed1.org" "/home/victor/sync/org/elfeed2.org" "/home/victor/sync/org/inbox.org" "/home/victor/sync/org/journal.org" "/home/victor/sync/org/notes.org" "/home/victor/sync/org/nutrition.org" "/home/victor/sync/org/projects_private.org" "/home/victor/sync/org/projects_work.org" "/home/victor/sync/org/quotes.org" "/home/victor/sync/org/quotes2.org" "/home/victor/sync/org/site.org" "/home/victor/sync/org/tickler.org" "/home/victor/sync/org/topics_aws.org" "/home/victor/sync/org/topics_go.org" "/home/victor/sync/org/topics_notes.org" "/home/victor/sync/org/topics_org.org" "/home/victor/sync/org/topics_security.org" "/home/victor/sync/org/topics_spacemacs.org" "~/work/repos/checkruns-poc/TODO.org" "~/go/src/github.com/Scout24/codestripper/TODO.org")))
+    ("/home/victor/sync/org/site/deep-nesting.org" "/home/victor/sync/org/archives.org" "/home/victor/sync/org/bookmarks.org" "/home/victor/sync/org/books.org" "/home/victor/sync/org/deep-nesting.org" "/home/victor/sync/org/inbox.org" "/home/victor/sync/org/journal.org" "/home/victor/sync/org/notes.org" "/home/victor/sync/org/nutrition.org" "/home/victor/sync/org/projects_private.org" "/home/victor/sync/org/projects_work.org" "/home/victor/sync/org/quotes.org" "/home/victor/sync/org/quotes2.org" "/home/victor/sync/org/scripter-posts.org" "/home/victor/sync/org/site.org" "/home/victor/sync/org/tickler.org" "/home/victor/sync/org/topics_aws.org" "/home/victor/sync/org/topics_go.org" "/home/victor/sync/org/topics_notes.org" "/home/victor/sync/org/topics_org.org" "/home/victor/sync/org/topics_security.org" "/home/victor/sync/org/topics_spacemacs.org" "~/go/src/github.com/Scout24/codestripper/TODO.org")))
  '(package-selected-packages
    (quote
-    (ox-hugo toml-mode racer pos-tip cargo rust-mode org-super-agenda ts org-jira elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet elfeed twittering-mode helm-org-rifle pocket-reader ht org-web-tools rainbow-identifiers ov pocket-lib kv esxml helm-gtags ggtags gruvbox-theme autothemer gruvbox-theme-theme yaml-mode smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup htmlize helm-gitignore helm-company helm-c-yasnippet go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit git-commit with-editor transient company-statistics company-go go-mode company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+    (web-beautify livid-mode skewer-mode json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode company-quickhelp ox-hugo toml-mode racer pos-tip cargo rust-mode org-super-agenda ts org-jira elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet elfeed twittering-mode helm-org-rifle pocket-reader ht org-web-tools rainbow-identifiers ov pocket-lib kv esxml helm-gtags ggtags gruvbox-theme autothemer gruvbox-theme-theme yaml-mode smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup htmlize helm-gitignore helm-company helm-c-yasnippet go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit git-commit with-editor transient company-statistics company-go go-mode company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
  '(safe-local-variable-values
    (quote
-    ((eval add-hook
+    ((eval toggle-truncate-lines 1)
+     (eval add-hook
            (quote after-save-hook)
            (function org-hugo-export-wim-to-md-after-save)
            :append :local)))))
