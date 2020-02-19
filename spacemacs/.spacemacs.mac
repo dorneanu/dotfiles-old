@@ -31,6 +31,8 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     themes-megapack
+     html
      javascript
      rust
      yaml
@@ -53,8 +55,6 @@ values."
                       auto-completion-enable-help-tooltip 'manual
                       auto-completion-use-company-box nil
                       auto-completion-enable-sort-by-usage nil)
-     yasnippet
-     helm-c-yasnippet
      ;; better-defaults
      emacs-lisp
      git
@@ -65,7 +65,6 @@ values."
      (go :variables gofmt-command "goimports")
      markdown
      org
-     neotree
      tmux
      gtags
      elfeed
@@ -76,7 +75,6 @@ values."
              elfeed-feeds '(("https://www.heise.de/rss/heise-atom.xml" news)
                             ("https://golangweekly.com/rss/25mg1iko" golang)))
 
-     org-jira
      (org :variables
           org-enable-hugo-support t)
      ;; (shell :variables
@@ -147,7 +145,8 @@ values."
    ;; with `:variables' keyword (similar to layers). Check the editing styles
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
-   dotspacemacs-editing-style 'vim
+   dotspacemacs-editing-style '(vim :variables
+                                    vim-style-remap-Y-to-y$ t)
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
    ;; Specify the startup banner. Default value is `official', it displays
@@ -348,6 +347,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
   )
 
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -363,7 +363,7 @@ you should place your code here."
   ;; Open file in vertical split by default
   (setq split-height-threshold 0)
   (setq split-width-threshold nil)
-  
+
   ;; save password for twitter
   (setq twittering-use-master-password t)
 
@@ -375,6 +375,9 @@ you should place your code here."
 
   ;; load right versio of ht package
   (load-library "ht")
+
+  ;; truncate lines
+  ;; (setq org-startup-truncated nil)
 
   ;; disable evil-mode for pocket-reader-mode
   (add-to-list 'evil-emacs-state-modes 'pocket-reader-mode)
@@ -396,18 +399,36 @@ you should place your code here."
     ;; here goes your Org config :)
     ;; ....
 
+    ;; enable org-protocol
+    (require 'org-protocol)
     ;; set tag inheritance
     (setq org-use-tag-inheritance t)
 
     ;; start agenda with monday
     (setq org-agenda-start-on-weekday 1)
 
+    ;; automatically skip non-existent org files
+    (setq org-agenda-skip-unavailable-files t)
+
     (require 'org-tempo)
     (require 'helm-org-rifle)
+
+    ;; no blank lines
+    (setq org-cycle-separator-lines 0)
+
+    ;; easily insert links
+    (add-hook 'org-load-hook
+              (lambda ()
+                (define-key org-mode-map "\M-n" 'org-next-link)
+                (define-key org-mode-map "\M-p" 'org-previous-link)))
+
+    ;; enable web tools
+    (require 'org-web-tools)
 
     ;; enable hugo support
     (require 'ox-hugo)
     ;; define function add adding properties to a heading
+
     (defun jv-ox-prop ()
       (interactive)
       (org-set-property "EXPORT_FILE_NAME" 
@@ -436,24 +457,26 @@ you should place your code here."
                               (:name "Next to do"
                                      :todo "NEXT"
                                      :order 5)
+                              (:name "Due Today"
+                                     :deadline today
+                                     :order 2)
+                              (:name "Work"
+                                     :tag "project"
+                                     :tag "@work"
+                                     :order 15)
                               (:name "Personal"
                                      :tag "@personal"
+                                     :tag "@private"
                                      :order 10)
                               (:name "Home"
                                      :tag "@home"
                                      :order 1i)
-                              (:name "Work"
-                                     :tag "@work"
-                                     :order 15)
                               (:name "To read"
                                      :tag "Read"
                                      :order 30)
                               (:name "Waiting"
                                      :todo "WAITING"
                                      :order 40)
-                              (:name "Due Today"
-                                     :deadline today
-                                     :order 2)
                               ))))))))
     ;; Replace org-set-tags with org-set-tags-command in keybinding
     (spacemacs/set-leader-keys-for-major-mode 'org-mode ":" 'org-set-tags-command)
@@ -524,7 +547,7 @@ you should place your code here."
     (setq org-tag-alist (quote ((:startgroup)
                                 ("@home" . ?H)
                                 ("@work" . ?W)
-                                ("@personal" . ?P)
+                                ("@private" . ?P)
                                 (:endgroup)
                                 ("WAITING" . ?w)
                                 ("HOLD" . ?h)
@@ -560,10 +583,11 @@ you should place your code here."
  '(helm-completion-style (quote emacs))
  '(org-agenda-files
    (quote
-    ("/home/victor/sync/org/site/deep-nesting.org" "/home/victor/sync/org/archives.org" "/home/victor/sync/org/bookmarks.org" "/home/victor/sync/org/books.org" "/home/victor/sync/org/deep-nesting.org" "/home/victor/sync/org/inbox.org" "/home/victor/sync/org/journal.org" "/home/victor/sync/org/notes.org" "/home/victor/sync/org/nutrition.org" "/home/victor/sync/org/projects_private.org" "/home/victor/sync/org/projects_work.org" "/home/victor/sync/org/quotes.org" "/home/victor/sync/org/quotes2.org" "/home/victor/sync/org/scripter-posts.org" "/home/victor/sync/org/site.org" "/home/victor/sync/org/tickler.org" "/home/victor/sync/org/topics_aws.org" "/home/victor/sync/org/topics_go.org" "/home/victor/sync/org/topics_notes.org" "/home/victor/sync/org/topics_org.org" "/home/victor/sync/org/topics_security.org" "/home/victor/sync/org/topics_spacemacs.org" "~/go/src/github.com/Scout24/codestripper/TODO.org")))
+    ("/home/victor/sync/org/site/deep-nesting.org" "/home/victor/sync/org/archives.org" "/home/victor/sync/org/bookmarks.org" "/home/victor/sync/org/books.org" "/home/victor/sync/org/deep-nesting.org" "/home/victor/sync/org/inbox.org" "/home/victor/sync/org/journal.org" "/home/victor/sync/org/notes.org" "/home/victor/sync/org/nutrition.org" "/home/victor/sync/org/projects_private.org" "/home/victor/sync/org/projects_work.org" "/home/victor/sync/org/quotes.org" "/home/victor/sync/org/quotes2.org" "/home/victor/sync/org/site.org" "/home/victor/sync/org/tickler.org" "/home/victor/sync/org/topics_aws.org" "/home/victor/sync/org/topics_go.org" "/home/victor/sync/org/topics_notes.org" "/home/victor/sync/org/topics_org.org" "/home/victor/sync/org/topics_security.org" "/home/victor/sync/org/topics_spacemacs.org" "/home/victor/sync/org/zeit.org" "~/go/src/github.com/Scout24/codestripper/TODO.org")))
+ '(org-web-tools-pandoc-sleep-time 6.0)
  '(package-selected-packages
    (quote
-    (web-beautify livid-mode skewer-mode json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode company-quickhelp ox-hugo toml-mode racer pos-tip cargo rust-mode org-super-agenda ts org-jira elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet elfeed twittering-mode helm-org-rifle pocket-reader ht org-web-tools rainbow-identifiers ov pocket-lib kv esxml helm-gtags ggtags gruvbox-theme autothemer gruvbox-theme-theme yaml-mode smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup htmlize helm-gitignore helm-company helm-c-yasnippet go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit git-commit with-editor transient company-statistics company-go go-mode company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+    (zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data web-beautify livid-mode skewer-mode json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode company-quickhelp ox-hugo toml-mode racer pos-tip cargo rust-mode org-super-agenda ts org-jira elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet elfeed twittering-mode helm-org-rifle pocket-reader ht org-web-tools rainbow-identifiers ov pocket-lib kv esxml helm-gtags ggtags gruvbox-theme autothemer gruvbox-theme-theme yaml-mode smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup htmlize helm-gitignore helm-company helm-c-yasnippet go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit git-commit with-editor transient company-statistics company-go go-mode company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
  '(safe-local-variable-values
    (quote
     ((eval toggle-truncate-lines 1)
@@ -576,4 +600,4 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:background nil)))))
