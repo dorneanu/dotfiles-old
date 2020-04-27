@@ -70,12 +70,13 @@ values."
      tmux
      gtags
      elfeed
+     w3m
+     version-control
      ;; configure elfeed
-     (elfeed :variables rmh-elfeed-org-files (list "~/sync/org/elfeed1.org"
-                                                   "~/sync/org/elfeed2.org"))
-     (elfeed :variables
-             elfeed-feeds '(("https://www.heise.de/rss/heise-atom.xml" news)
-                            ("https://golangweekly.com/rss/25mg1iko" golang)))
+     (elfeed :variables rmh-elfeed-org-files (list "~/sync/org/elfeed.org"))
+     ;; (elfeed :variables
+     ;;         elfeed-feeds '(("https://www.heise.de/rss/heise-atom.xml" news)
+     ;;                        ("https://golangweekly.com/rss/25mg1iko" golang)))
 
      (org :variables
           org-enable-hugo-support t)
@@ -359,8 +360,8 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   
   ;; THEME
-  (spacemacs/load-theme 'gruvbox)
-  (load-theme 'gruvbox-dark-medium)
+  ;; (spacemacs/load-theme 'solarized-light)
+  (load-theme 'farmhouse-dark t)
 
   ;; automatically update buffers
   (global-auto-revert-mode t)
@@ -387,6 +388,10 @@ you should place your code here."
   ;; disable evil-mode for pocket-reader-mode
   (add-to-list 'evil-emacs-state-modes 'pocket-reader-mode)
 
+  ;; w3m settings
+  (setq w3m-command-arguments '("-cookie"))
+  (setq w3m-use-cookies t)
+
   ;; Open splits in vertical mode
   (setq split-height-threshold nil)
   (setq split-width-threshold 0)
@@ -399,14 +404,20 @@ you should place your code here."
   (yas-global-mode 1)
   (yas-load-directory "~/.emacs.d/private/snippets")
 
+  ;; add keybinding for org-insert-structure-template
+  (global-set-key (kbd "C-c ") 'helm-yas-complete)
+
   ;; add hugo support
   (use-package ox-hugo
     :after ox)
+
   
   ;; org stuff
   (with-eval-after-load 'org
     ;; here goes your Org config :)
     ;; ....
+    ;; set org directory
+    (setq org-dir "~/sync/org/")
 
     ;; enable org-protocol
     (require 'org-protocol)
@@ -416,6 +427,9 @@ you should place your code here."
     ;; start agenda with monday
     (setq org-agenda-start-on-weekday 1)
 
+    ;; fix M-ret in evil mode
+    (org-defkey org-mode-map [(meta return)] 'org-meta-return)
+
     ;; automatically skip non-existent org files
     (setq org-agenda-skip-unavailable-files t)
 
@@ -424,6 +438,9 @@ you should place your code here."
 
     ;; no blank lines
     (setq org-cycle-separator-lines 0)
+
+    ;; TODO state to which a repeater should return the repeating task.
+    (setq org-todo-repeat-to-state "TODO")
 
     ;; easily insert links
     (add-hook 'org-load-hook
@@ -436,68 +453,114 @@ you should place your code here."
 
     ;; enable hugo support
     (require 'ox-hugo)
-    ;; define function add adding properties to a heading
 
+    ;; define function add adding properties to a heading
     (defun jv-ox-prop ()
       (interactive)
       (org-set-property "EXPORT_FILE_NAME" 
       (org-hugo-slug (org-get-heading :no-tags :no-todo))))
     (spacemacs/set-leader-keys-for-major-mode 'org-mode "p" 'jv-ox-prop)
 
+    ;; Adapted from https://blog.jethro.dev/posts/processing_inbox/
+    (defun jethro/org-agenda-process-inbox-item ()
+      "Process a single item in the org-agenda."
+      (org-with-wide-buffer
+       (org-agenda-set-tags)
+       (org-agenda-priority)
+       (org-agenda-refile nil nil t)))
+    (spacemacs/set-leader-keys-for-major-mode 'org-mode "o" 'jethro/org-agenda-process-inbox-item)
+
+
     ;; Configure org-super-agenda
     (require 'org-super-agenda)
     (org-super-agenda-mode t)
     (setq org-agenda-custom-commands
           '(("z" "Custom view"
-             ((agenda "" ((org-agenda-span 'day)
+             ((agenda "" ((org-agenda-span 1)
+                          (org-agenda-start-on-weekday nil)
                           (org-super-agenda-groups
                            '((:name "Today"
                                     :time-grid t
                                     :date today
                                     :todo "TODAY"
                                     :scheduled today
-                                    :order 1)))))
-              (alltodo "" ((org-agenda-overriding-header "")
+                                    :tag ("bday" "ann" "cal")
+                                    :order 1)
+                             (:name "Important"
+                                    :priority "A"
+                                    :order 2)
+                             (:name "Next to do"
+                                    :todo "NEXT"
+                                    :order 5)
+                             (:name "Overdue"
+                                    :deadline past)
+                             (:name "Reschedule"
+                                    :scheduled past)
+                             (:name "Due Soon"
+                                    :deadline future)
+                             )
+                           )))
+              (alltodo "" ((org-agenda-overriding-header "To Refile")
+                           (org-agenda-files (list (concat org-dir "inbox.org")))))
+              (alltodo "" ((org-agenda-overriding-header "Other TODOs")
+                           (org-agenda-files (list
+                              (concat org-dir "private.org")
+                              (concat org-dir "contacts.org")
+                              (concat org-dir "work.org")
+                              (concat org-dir "home.org")))
                            (org-super-agenda-groups
-                            '((:name "Important"
-                                   :tag "Important"
-                                   :priority "A"
-                                   :order 2)
+                            '(
                               (:name "Next to do"
-                                     :todo "NEXT"
-                                     :order 5)
-                              (:name "Due Today"
-                                     :deadline today
-                                     :order 2)
-                              (:name "Work"
-                                     :tag "project"
-                                     :tag "@work"
-                                     :order 15)
+                                    :todo "NEXT"
+                                    :order 5)
                               (:name "Personal"
-                                     :tag "@personal"
-                                     :tag "@private"
-                                     :order 10)
+                                    :tag "@personal"
+                                    :tag "@private"
+                                    :order 10)
+                              (:name "Work"
+                                    :tag "project"
+                                    :tag "@work"
+                                    :order 15)
                               (:name "Home"
-                                     :tag "@home"
-                                     :order 1i)
-                              (:name "To read"
-                                     :tag "Read"
-                                     :order 30)
+                                    :tag "@home"
+                                    :order 20)
+                              (:name "Ping"
+                                    :todo "PING")
+                              ;; (:name "To read"
+                              ;;     :tag "Read"
+                              ;;     :order 30)
                               (:name "Waiting"
-                                     :todo "WAITING"
-                                     :order 40)
-                              ))))))))
+                                  :todo "WAITING")
+                              )
+                            ))
+               )))))
+            ;; '((("p" "Someday"
     ;; Replace org-set-tags with org-set-tags-command in keybinding
     (spacemacs/set-leader-keys-for-major-mode 'org-mode ":" 'org-set-tags-command)
     ;; org settings
     (setq org-journal-file-format "%Y-%m-%d")
 
-    (setq org-dir "~/sync/org/")
     (setq org-archive-location (concat org-dir "archives.org::"))
+
+    ;; DO more logging
+    (setq org-log-into-drawer t)
     (setq org-log-done t)
+    (setq org-log-reschedule t)
+    (setq org-log-redeadline t)
+
     (setq org-agenda-files (directory-files-recursively org-dir "\.org$"))
     (setq org-default-notes-file (concat org-dir "topics/notes.org"))
-    (global-set-key (kbd "C-c c") 'org-capture)
+    ;; (global-set-key (kbd "C-c c") 'org-capture)
+    ;; Go into insert mode after org-capture
+    (add-hook 'org-capture-mode-hook 'evil-insert-state)
+
+    ;; use org-contacts
+    (require 'org-contacts)
+    (use-package org-contacts
+      :ensure nil
+      :after org
+      :custom (org-contacts-files '("~/sync/org/contacts.org")))
+
 
     ;; configure org-projectile
     (require 'org-projectile)
@@ -532,7 +595,7 @@ you should place your code here."
     ;; Set todo keywords
     (setq org-todo-keywords
           '(
-            (sequence "IDEA(i)" "TODO(t)" "MEETING(m)" "STARTED(s)" "NEXT(n)" "WAITING(w)" "BUG(b)" "|" "DONE(d)")
+            (sequence "TODO(t)" "IDEA(i)"  "MEETING(m)" "STARTED(s)" "NEXT(n)" "WAITING(w)" "BUG(b)" "PING(p)" "|" "DONE(d)")
             (sequence "|" "CANCELED(c)" "DELEGATED(l)" "SOMEDAY(f)")
             ))
 
@@ -546,8 +609,9 @@ you should place your code here."
             ("DELEGATED" . (:foreground "LimeGreen" :weight bold))
             ("SOMEDAY" . (:foreground "LimeGreen" :weight bold))
             ("BUG" . (:foreground "Orange" :weight bold))
+            ("PING" . (:foreground "Green" :weight bold))
             ))
-    (setq org-use-fast-todo-selection t)
+    ;; (setq org-use-fast-todo-selection t)
 
     ;; Use org-indent modes
     (setq org-startup-indented t)
@@ -639,6 +703,9 @@ static char *gnus-pointer[] = {
  '(org-agenda-files
    (quote
     ("~/sync/org/private.org" "~/sync/org/work.org" "/home/victor/sync/org/site/deep-nesting.org" "/home/victor/sync/org/archives.org" "/home/victor/sync/org/bookmarks.org" "/home/victor/sync/org/books.org" "/home/victor/sync/org/inbox.org" "/home/victor/sync/org/journal.org" "/home/victor/sync/org/notes.org" "/home/victor/sync/org/nutrition.org" "/home/victor/sync/org/quotes.org" "/home/victor/sync/org/quotes2.org" "/home/victor/sync/org/site.org" "/home/victor/sync/org/tickler.org" "/home/victor/sync/org/topics_aws.org" "/home/victor/sync/org/topics_go.org" "/home/victor/sync/org/topics_notes.org" "/home/victor/sync/org/topics_org.org" "/home/victor/sync/org/topics_security.org" "/home/victor/sync/org/topics_spacemacs.org" "/home/victor/sync/org/zeit.org" "~/go/src/github.com/Scout24/codestripper/TODO.org")))
+ '(org-modules
+   (quote
+    (ol-bbdb ol-bibtex ol-docview ol-eww ol-gnus ol-info ol-irc ol-mhe ol-rmail org-tempo ol-w3m)))
  '(org-web-tools-pandoc-sleep-time 6.0)
  '(package-selected-packages
    (quote
