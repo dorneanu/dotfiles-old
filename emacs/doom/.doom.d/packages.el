@@ -14,7 +14,7 @@
                    lsp-python-ms
                    pyimport)
 
-;; (package! python-black)
+(package! python-black)
 (package! material-theme)
 (package! farmhouse-theme)
 (package! ox-hugo)
@@ -30,6 +30,7 @@
 (package! pocket-reader)
 (package! impatient-mode)
 (package! org-reveal)
+;; (package! emacs-reveal)
 (package! epresent)
 (package! org-present)
 (package! company)
@@ -39,6 +40,7 @@
 (package! tiddlywiki-mode :recipe
   (:host github :repo "whacked/tiddlywiki-org"))
 
+(package! elfeed-goodies)
 (package! pinentry)
 (package! hnreader)
 (package! go-fill-struct)

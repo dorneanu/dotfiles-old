@@ -459,6 +459,10 @@
 (use-package! ox-hugo
   :after ox)
 
+;; ox-reveal
+(use-package! ox-reveal
+  :after ox)
+
 ;; plantuml
 (use-package plantuml-mode
   :config (setq plantuml-default-exec-mode "jar")
@@ -537,9 +541,13 @@
 (setq twittering-allow-insecure-server-cert t)
 ;; (setq twittering-oauth-invoke-browser nil)
 
+;; setup elfeed
+(setq-default elfeed-search-filter "@2-day-ago +unread ")
+(setq rmh-elfeed-org-files (list "~/work/sync/org/elfeed.org"))
 
 (load! "+functions")
 (load! "+bindings")
 (load! "+lsp")
 (load! "+go")
 (load! "+python")
+(load! "+elfeed")

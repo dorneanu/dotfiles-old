@@ -40,6 +40,6 @@
   (go-mode . flycheck-golangci-lint-setup)
   )
 
-(add-hook 'lsp-after-initialize-hook (lambda
-                                       ()
-                                       (flycheck-add-next-checker 'lsp 'golangci-lint)))
+;; (add-hook 'lsp-after-initialize-hook (lambda
+;;                                        ()
+;;                                        (flycheck-add-next-checker 'lsp 'golangci-lint)))
