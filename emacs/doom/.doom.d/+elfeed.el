@@ -7,6 +7,7 @@
 
   (elfeed-org)
   (use-package! elfeed-link)
+  (use-package! pocket-lib)
   ;; (use-package elfeed-goodies
   ;;       :config
   ;;       (elfeed-goodies/setup))

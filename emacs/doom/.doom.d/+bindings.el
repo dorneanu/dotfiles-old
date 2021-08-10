@@ -15,6 +15,9 @@
  "C-j"    #'evil-window-down
  "C-k"    #'evil-window-up
  "C-l"    #'evil-window-right
+
+ ;; elfeed
+ "C-x w"  #'elfeed
 )
 
 ;; elfeed
@@ -35,6 +38,7 @@
       :n "-" #'elfeed-search-untag-all
       :n "S" #'elfeed-search-set-filter
       :n "b" #'elfeed-search-browse-url
+      :n "a" #'pocket-reader-elfeed-search-add-link
       :n "y" #'elfeed-search-yank)
 (map! :map elfeed-show-mode-map
       :after elfeed-show
@@ -42,6 +46,7 @@
       [remap kill-buffer] "q"
       :n doom-leader-key nil
       :nm "q" #'+rss/delete-pane
+      :nm "a" #'pocket-reader-elfeed-entry-add-link
       :nm "o" #'ace-link-elfeed
       :nm "RET" #'org-ref-elfeed-add
       :nm "n" #'elfeed-show-next
