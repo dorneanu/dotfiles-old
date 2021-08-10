@@ -1,11 +1,15 @@
 ;;; ../work/dotfiles/emacs/doom/.doom.d/+elfeed.el -*- lexical-binding: t; -*-
 
+
 ;; from https://tecosaur.github.io/emacs-config/config.html#visual-enhancements
 ;;
 (after! elfeed
 
   (elfeed-org)
   (use-package! elfeed-link)
+  ;; (use-package elfeed-goodies
+  ;;       :config
+  ;;       (elfeed-goodies/setup))
 
   (setq elfeed-search-filter "@1-week-ago +unread"
         elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
