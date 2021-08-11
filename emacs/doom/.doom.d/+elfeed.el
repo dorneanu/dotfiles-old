@@ -8,6 +8,7 @@
   (elfeed-org)
   (use-package! elfeed-link)
   (use-package! pocket-lib)
+  (use-package! org-web-tools)
   ;; (use-package elfeed-goodies
   ;;       :config
   ;;       (elfeed-goodies/setup))
@@ -118,5 +119,29 @@
             (insert content))
         (insert (propertize "(empty)\n" 'face 'italic)))
       (goto-char (point-min))))
-
   )
+
+;; from https://www.reddit.com/r/emacs/comments/g6oowz/elfeed_rules/
+(defun ap/elfeed-search-browse-org ()
+  "Open selected items as Org."
+  (interactive)
+  (let ((browse-url-browser-function (lambda (url _)
+                                       (org-web-tools-read-url-as-org url))))
+    (ap/elfeed-search-selected-map #'ap/elfeed-search-browse-entry)))
+
+(defun ap/elfeed-search-browse-entry (entry)
+  "Browse ENTRY with `browse-url' and mark as read.
+If ENTRY is unread, it will also be unstarred.  To override the
+browser function, bind `browse-url-browser-function' around the
+call to this."
+  (let ((url (elfeed-entry-link entry))
+        (tags (elfeed-entry-tags entry)))
+    ;; Mark as read first, because apparently the elfeed functions don't work after `browse-url'
+    ;; potentially changes the buffer.
+    (elfeed-untag entry 'unread)
+    (elfeed-search-update-entry entry)
+    (browse-url url)))
+
+(cl-defun ap/elfeed-search-selected-map (fn)
+  "Map FN across selected entries in elfeed-search buffer using `mapcar'."
+  (mapcar fn (elfeed-search-selected)))

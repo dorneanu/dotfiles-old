@@ -1,9 +1,11 @@
 ;;; +bindings.el -*- lexical-binding: t; -*-
 
+(global-set-key (kbd "C-RET") 'org-insert-subheading)
+
 ;; https://github.com/hlissner/doom-emacs/issues/906
 (map! (:when IS-MAC
   (:map general-override-mode-map
-    :gi "M-v" #'yank)))
+   :gi "M-v" #'yank)))
 
 (map!
  ;; Ensure there are no conflicts
@@ -38,6 +40,7 @@
       :n "-" #'elfeed-search-untag-all
       :n "S" #'elfeed-search-set-filter
       :n "b" #'elfeed-search-browse-url
+      :n "B" #'ap/elfeed-search-browse-org
       :n "a" #'pocket-reader-elfeed-search-add-link
       :n "y" #'elfeed-search-yank)
 (map! :map elfeed-show-mode-map
@@ -47,6 +50,7 @@
       :n doom-leader-key nil
       :nm "q" #'+rss/delete-pane
       :nm "a" #'pocket-reader-elfeed-entry-add-link
+      :n "B" #'ap/elfeed-search-browse-entry
       :nm "o" #'ace-link-elfeed
       :nm "RET" #'org-ref-elfeed-add
       :nm "n" #'elfeed-show-next
