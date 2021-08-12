@@ -22,6 +22,17 @@
  "C-x w"  #'elfeed
 )
 
+;; pocket-reader
+(map! :map pocket-reader-mode-map
+      :after pocket-reader
+      :nm "d" #'pocket-reader-delete
+      :nm "a" #'pocket-reader-toggle-archived
+      :nm "TAB" #'pocket-reader-open-url
+      :nm "tr" #'pocket-reader-remove-tags
+      :nm "gr" #'pocket-reader-refresh
+      :nm "p" #'pocket-reader-search
+      :nm "y" #'pocket-reader-copy-url)
+
 ;; elfeed
 ;; from https://tecosaur.github.io/emacs-config/config.html
 (map! :map elfeed-search-mode-map
