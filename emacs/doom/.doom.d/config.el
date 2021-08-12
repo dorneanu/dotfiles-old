@@ -143,6 +143,10 @@
   (setq org-special-ctrl-a/e t)
   (setq org-special-ctrl-k t))
 
+;; Allow to create new nodes when refiling
+(after! org
+  (setq org-refile-allow-creating-parent-nodes 'confirm))
+
 ;; Enable variable and visual line mode in Org mode by default.
 (add-hook! org-mode :append
            #'visual-line-mode
@@ -544,6 +548,10 @@
 ;; setup elfeed
 (setq-default elfeed-search-filter "@2-day-ago +unread ")
 (setq rmh-elfeed-org-files (list "~/work/sync/org/elfeed.org"))
+
+;; setup ox-tiddly
+(require 'ox-tiddly)
+
 
 (load! "+functions")
 (load! "+bindings")
