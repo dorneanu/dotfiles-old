@@ -145,3 +145,24 @@ at URL has no title, return URL."
         (:overtime
          (format "Overtime! %d minutes" (/ (org-pomodoro-remaining-seconds) 60))))
     "No active pomo"))
+
+;; from https://github.com/dfeich/org8-wikiexporters/blob/master/ox-tiddly.el
+;; Converts an ORG link into Tiddlywiki one
+(defun dorneanu/org-tiddly-link (link desc)
+  (let ((raw-link (org-element-property :raw-link link)))
+    (concat "[["
+            (when (org-string-nw-p desc) (format "%s|" desc))
+	    raw-link
+            "]]")))
+
+;; Copy current url to scratch buffer
+(defun dorneanu/pocket-reader-copy-to-scratch ()
+  "Copy URL of current item to kill-ring/clipboard."
+  (interactive)
+  (when-let ((id (tabulated-list-get-id))
+             (item (ht-get pocket-reader-items id))
+             (url (pocket-reader--get-url item)))
+    (with-current-buffer "*scratch*"
+      (insert url)
+      (newline))
+     (message "Added: %s to scratch buffer" url)))

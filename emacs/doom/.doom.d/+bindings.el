@@ -32,7 +32,8 @@
       :nm "ta" #'pocket-reader-add-tags
       :nm "gr" #'pocket-reader-refresh
       :nm "p" #'pocket-reader-search
-      :nm "y" #'pocket-reader-copy-url)
+      :nm "y" #'pocket-reader-copy-url
+      :nm "Y" #'dorneanu/pocket-reader-copy-to-scratch)
 
 ;; elfeed
 ;; from https://tecosaur.github.io/emacs-config/config.html
