@@ -552,6 +552,27 @@
 ;; setup ox-tiddly
 (require 'ox-tiddly)
 
+;; org-pomodoro
+(use-package org-pomodoro
+  :after org-agenda
+  :config
+  (add-hook 'org-pomodoro-started-hook
+            (lambda ()
+              (shell-command "ssh mac say 'Pomodoro gestartet'")
+              ))
+  (add-hook 'org-pomodoro-finished-hook
+            (lambda ()
+              (shell-command "ssh mac say 'Pomodoro fertig. Mach eine Pause!'")
+              ))
+  (add-hook 'org-pomodoro-break-finished-hook
+            (lambda ()
+              (shell-command "ssh mac say 'Pause fertig'")
+              ))
+  (add-hook 'org-pomodoro-killed-hook
+            (lambda ()
+              (shell-command "ssh mac say 'Pomodoro gekilled'")
+              ))
+  )
 
 (load! "+functions")
 (load! "+bindings")
