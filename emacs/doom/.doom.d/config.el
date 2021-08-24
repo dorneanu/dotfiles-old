@@ -18,8 +18,9 @@
         make-backup-files nil
         indent-tabs-mode nil
         make-backup-files nil
+        auto-save-visited-interval 15
         auto-save-default t)
-(setq create-lockfiles nil)
+(auto-save-visited-mode +1)
 
 ;; Set localleader key
 (setq evil-snipe-override-evil-repeat-keys nil)
@@ -74,8 +75,8 @@
             ("SOMEDAY" . (:foreground "LimeGreen" :weight bold))
             ("BUG" . (:foreground "Orange" :weight bold))
             ("PING" . (:foreground "Green" :weight bold))
-            )))
-
+            ))
+)
 ;; add org-habit
 (after! org
   (add-to-list 'org-modules 'org-habit))
@@ -142,6 +143,10 @@
 (after! org
   (setq org-special-ctrl-a/e t)
   (setq org-special-ctrl-k t))
+
+;; add a new item when hitting return in a bulleted list
+(add-hook 'org-mode-hook
+          (lambda () (org-autolist-mode)))
 
 ;; Allow to create new nodes when refiling
 (after! org
@@ -573,6 +578,10 @@
               (shell-command "ssh mac say 'Pomodoro gekilled'")
               ))
   )
+
+;; pocket-reader
+;; don't archive automatically on open
+(setq pocket-reader-archive-on-open nil)
 
 (load! "+functions")
 (load! "+bindings")
