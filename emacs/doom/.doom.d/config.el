@@ -131,8 +131,8 @@
 (after! org
     (setq org-log-into-drawer t)
     (setq org-log-done t)
-    (setq org-log-reschedule t)
-    (setq org-log-redeadline t))
+    (setq org-log-reschedule nil)
+    (setq org-log-redeadline nil))
 
 ;; disable org-babel execution while exporting
 (after! org
@@ -306,7 +306,7 @@
                                         :todo ""
                                         :order 1)
                                 (:name "Started"
-                                        :todo "STARTED"
+                                        :todo ("STARTED" "WIP")
                                         :order 1)
                                 (:name "Next to do"
                                         :todo "NEXT"
@@ -563,19 +563,19 @@
   :config
   (add-hook 'org-pomodoro-started-hook
             (lambda ()
-              (shell-command "ssh mac say 'Pomodoro gestartet'")
+              (async-shell-command "ssh mac say 'Pomodoro gestartet'")
               ))
   (add-hook 'org-pomodoro-finished-hook
             (lambda ()
-              (shell-command "ssh mac say 'Pomodoro fertig. Mach eine Pause!'")
+              (async-shell-command "ssh mac say 'Pomodoro fertig. Mach eine Pause!'")
               ))
   (add-hook 'org-pomodoro-break-finished-hook
             (lambda ()
-              (shell-command "ssh mac say 'Pause fertig'")
+              (async-shell-command "ssh mac say 'Pause fertig'")
               ))
   (add-hook 'org-pomodoro-killed-hook
             (lambda ()
-              (shell-command "ssh mac say 'Pomodoro gekilled'")
+              (async-shell-command "ssh mac say 'Pomodoro gekilled'")
               ))
   )
 

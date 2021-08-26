@@ -39,7 +39,8 @@
 (package! verb)
 (package! tiddlywiki-mode :recipe
   (:host github :repo "whacked/tiddlywiki-org"))
-
+(package! org8-wikiexporters :recipe
+  (:host github :repo "dfeich/org8-wikiexporters"))
 (package! elfeed-goodies)
 (package! pinentry)
 (package! hnreader)
@@ -48,6 +49,9 @@
 (package! gotest)
 (package! lsp-mode)
 (package! jupyter)
+(package! ox-pandoc)
+(package! ox-jira)
+(package! org-autolist)
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
