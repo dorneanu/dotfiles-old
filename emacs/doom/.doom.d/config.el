@@ -563,19 +563,19 @@
   :config
   (add-hook 'org-pomodoro-started-hook
             (lambda ()
-              (async-shell-command "ssh mac say 'Pomodoro gestartet'")
+              (shell-command "ssh mac say 'Pomodoro gestartet'")
               ))
   (add-hook 'org-pomodoro-finished-hook
             (lambda ()
-              (async-shell-command "ssh mac say 'Pomodoro fertig. Mach eine Pause!'")
+              (shell-command "ssh mac say 'Pomodoro fertig. Mach eine Pause!'")
               ))
   (add-hook 'org-pomodoro-break-finished-hook
             (lambda ()
-              (async-shell-command "ssh mac say 'Pause fertig'")
+              (shell-command "ssh mac say 'Pause fertig'")
               ))
   (add-hook 'org-pomodoro-killed-hook
             (lambda ()
-              (async-shell-command "ssh mac say 'Pomodoro gekilled'")
+              (shell-command "ssh mac say 'Pomodoro gekilled'")
               ))
   )
 
