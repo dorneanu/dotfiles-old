@@ -583,6 +583,9 @@
 ;; don't archive automatically on open
 (setq pocket-reader-archive-on-open nil)
 
+;; open tid files (Tiddlywiki) in org-mode
+(add-to-list 'auto-mode-alist '("\\.tid\\'" . org-mode))
+
 (load! "+functions")
 (load! "+bindings")
 (load! "+lsp")
