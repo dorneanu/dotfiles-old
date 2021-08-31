@@ -166,3 +166,12 @@ at URL has no title, return URL."
       (insert url)
       (newline))
      (message "Added: %s to scratch buffer" url)))
+
+;; Remove 2read and next tags from current pocket reader item
+(defun dorneanu/pocket-reader-remove-next()
+  (interactive)
+  (pocket-reader--remove-tags (list "2read" "next"))
+  (message "Removed 2read, next tags from current item")
+  (pocket-reader-toggle-archived)
+  (message "Archived item")
+  )
