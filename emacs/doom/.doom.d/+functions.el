@@ -175,3 +175,33 @@ at URL has no title, return URL."
   (pocket-reader-toggle-archived)
   (message "Archived item")
   )
+
+(defun dorneanu/tiddlywiki-add-bookmark ()
+  "Adds a new bookmark to tiddlywiki. The URL is fetched from clipboard or killring"
+    (require 'url-util)
+    (interactive)
+    (pocket-reader-copy-url)
+
+    (setq my-url (org-web-tools--get-first-url))
+    (setq url-html (org-web-tools--get-url my-url))
+    (setq url-title (org-web-tools--html-title url-html))
+    (setq url-path (url-hexify-string url-title))
+    (setq url-note (read-string (concat "Note for " my-url ":")))
+    (setq url-tags (concat "Bookmark TODO "(read-string "Additional tags: ")))
+
+    (request (concat "http://127.0.0.1:8181/recipes/default/tiddlers/" url-path)
+    :type "PUT"
+    :data (json-encode `(("name" . ,url-title) ("note" . ,url-note) ("url" . ,my-url) ("tags" . ,url-tags)))
+    :headers '(("Content-Type" . "application/json") ("X-Requested-With" . "TiddlyWiki2") ("Accept" . "application/json"))
+    :parser 'json-read
+    :success
+    (cl-function
+            (lambda (&key data &allow-other-keys)
+                (message "I sent: %S" (assoc-default 'args data))))
+    :complete (lambda (&rest _) (message "Finished! %s" (symbol-value 'url-title)))
+    :error (lambda (&rest _) (message "Some error"))
+    :status-code '((400 . (lambda (&rest _) (message "Got 400.")))
+                    (418 . (lambda (&rest _) (message "Got 418.")))
+                    (204 . (lambda (&rest _) (message "Got 202."))))
+    )
+)

@@ -30,6 +30,7 @@
       :nm "TAB" #'pocket-reader-open-url
       :nm "tr" #'pocket-reader-remove-tags
       :nm "tN" #'dorneanu/pocket-reader-remove-next
+      :nm "C-b" #'dorneanu/tiddlywiki-add-bookmark
       :nm "ta" #'pocket-reader-add-tags
       :nm "gr" #'pocket-reader-refresh
       :nm "p" #'pocket-reader-search
