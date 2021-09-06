@@ -19,11 +19,10 @@ add_link_to_dropbox() {
     fi
 
     # Sanitize title
-    # TITLE=$(echo '$TITLE' | sed -e 's/[^A-Za-z0-9._-]/_/g')
     echo "[-] Converting $TITLE"
 
     # Convert to PDF
-    OUTPUT_FILE="${RDRVIEW_OUTPUT}/${TITLE// /_}".epub
+    OUTPUT_FILE="${RDRVIEW_OUTPUT}/"$(echo ${TITLE} | sed -e 's/[^A-Za-z0-9._-]/_/g')".epub"
     pandoc -s --pdf-engine=xelatex --metadata title="${TITLE}" -f html -t epub -o ${OUTPUT_FILE} ${TEMP_FILE}
 
     # Copy to dropbox
