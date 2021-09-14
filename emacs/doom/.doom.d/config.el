@@ -106,10 +106,10 @@
             ;;     :empty-lines 1)
 
             ("t" "Todo" entry (file+headline "~/work/sync/org/inbox.org" "Tasks")
-             "* TODO  %?\n")
+             "* TODO %?\n")
 
             ("m" "Meeting" entry (file+headline "~/work/sync/org/inbox.org" "Meetings")
-             "* MEETING  %?\nSCHEDULED: %t\n%U\n%a\n")
+             "* MEETING %?\nSCHEDULED: %t\n%U\n%a\n")
 
             ("b" "Bookmark (Clipboard)" entry (file+headline "~/work/sync/org/bookmarks.org" "Bookmarks")
              "** %(org-web-tools-insert-link-for-clipboard-url)\n:PROPERTIES:\n:TIMESTAMP: %t\n:END:\n%?"  :prepend t)

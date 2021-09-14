@@ -1,5 +1,6 @@
 ;;; +bindings.el -*- lexical-binding: t; -*-
 
+
 (global-set-key (kbd "C-RET") 'org-insert-subheading)
 
 ;; https://github.com/hlissner/doom-emacs/issues/906
@@ -8,18 +9,28 @@
    :gi "M-v" #'yank)))
 
 (map!
- ;; Ensure there are no conflicts
- :nmvo doom-leader-key nil
- :nmvo doom-localleader-key nil
+        ;; Ensure there are no conflicts
+        :nmvo doom-leader-key nil
+        :nmvo doom-localleader-key nil
 
- ;; Window Movements
- "C-h"    #'evil-window-left
- "C-j"    #'evil-window-down
- "C-k"    #'evil-window-up
- "C-l"    #'evil-window-right
+        ;; Window Movements
+        "C-h"    #'evil-window-left
+        "C-j"    #'evil-window-down
+        "C-k"    #'evil-window-up
+        "C-l"    #'evil-window-right
 
- ;; elfeed
- "C-x w"  #'elfeed
+        ;; elfeed
+        "C-x w"  #'elfeed
+        :nmvo "C-p"    #'counsel-projectile-find-file
+
+        ;; Leader Configs
+        ;; From https://github.com/rschmukler/doom.d/blob/master/%2Bbindings.el
+        (:leader
+         :desc "Ivy open buffers"       :n  "b"   #'ivy-switch-buffer
+         (:desc "insert" :prefix "i"
+          :desc "From kill-ring" :nv "p" #'counsel-yank-pop
+          :desc "From snippet"   :nv "s" #'yas-insert-snippet)
+         )
 )
 
 ;; pocket-reader

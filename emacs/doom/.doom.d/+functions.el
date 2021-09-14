@@ -187,7 +187,7 @@ at URL has no title, return URL."
     (setq url-title (org-web-tools--html-title url-html))
     (setq url-path (url-hexify-string url-title))
     (setq url-note (read-string (concat "Note for " my-url ":")))
-    (setq url-tags (concat "Bookmark TODO "(read-string "Additional tags: ")))
+    (setq url-tags (concat "Bookmark "(read-string "Additional tags: ")))
 
     (request (concat "http://127.0.0.1:8181/recipes/default/tiddlers/" url-path)
     :type "PUT"
