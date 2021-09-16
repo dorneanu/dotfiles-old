@@ -30,6 +30,7 @@
          (:desc "insert" :prefix "i"
           :desc "From kill-ring" :nv "p" #'counsel-yank-pop
           :desc "From snippet"   :nv "s" #'yas-insert-snippet)
+          :desc "Open like spacemacs" "SPC" #'counsel-M-x
          )
 )
 
