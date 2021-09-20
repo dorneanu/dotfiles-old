@@ -52,6 +52,7 @@
 (package! ox-pandoc)
 (package! ox-jira)
 (package! org-autolist)
+(package! xclip)
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
