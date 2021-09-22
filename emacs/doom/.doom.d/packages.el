@@ -53,6 +53,7 @@
 (package! ox-jira)
 (package! org-autolist)
 (package! xclip)
+(package! eink-theme)
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
