@@ -205,3 +205,10 @@ at URL has no title, return URL."
                     (204 . (lambda (&rest _) (message "Got 202."))))
     )
 )
+
+;; From https://stackoverflow.com/questions/20866169/change-the-font-of-current-buffer-in-emacs
+ (defun dorneanu/set-monospace-current-buffer ()
+   "Sets a fixed width (monospace) font in current buffer"
+   (interactive)
+   (setq buffer-face-mode-face '(:family "Fira Mono"))
+   (buffer-face-mode))
