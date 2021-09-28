@@ -192,7 +192,7 @@ at URL has no title, return URL."
     (request (concat "http://127.0.0.1:8181/recipes/default/tiddlers/" url-path)
     :type "PUT"
     :data (json-encode `(("name" . ,url-title) ("note" . ,url-note) ("url" . ,my-url) ("tags" . ,url-tags)))
-    :headers '(("Content-Type" . "application/json") ("X-Requested-With" . "TiddlyWiki2") ("Accept" . "application/json"))
+    :headers '(("Content-Type" . "application/json") ("X-Requested-With" . "TiddlyWiki") ("Accept" . "application/json"))
     :parser 'json-read
     :success
     (cl-function
@@ -204,6 +204,28 @@ at URL has no title, return URL."
                     (418 . (lambda (&rest _) (message "Got 418.")))
                     (204 . (lambda (&rest _) (message "Got 202."))))
     )
+)
+
+(defun dorneanu/tiddlywiki-add-journal()
+  "Adds a new Tiddlywiki journal by fetching the last kill ring entry as content"
+  (interactive)
+  (let ((current-date (format-time-string "%Y-%m-%d")))
+    ;; (message "%s" current-date)
+    (request (concat "http://127.0.0.1:8181/recipes/default/tiddlers/" current-date)
+    :type "PUT"
+    :data (json-encode `(("title" . ,current-date) ("tags" . "Journal") ("text" . ,(current-kill 0 t))))
+    :headers '(("Content-Type" . "application/json") ("X-Requested-With" . "TiddlyWiki") ("Accept" . "application/json"))
+    :parser 'json-read
+    :success
+    (cl-function
+            (lambda (&key data &allow-other-keys)
+                (message "I sent: %S" (assoc-default 'args data))))
+    :complete (lambda (&rest _) (message "Finished! %s" current-date))
+    :error (lambda (&rest _) (message "Some error"))
+    :status-code '((400 . (lambda (&rest _) (message "Got 400.")))
+                    (418 . (lambda (&rest _) (message "Got 418.")))
+                    (204 . (lambda (&rest _) (message "Got 202."))))
+    ))
 )
 
 ;; From https://stackoverflow.com/questions/20866169/change-the-font-of-current-buffer-in-emacs
