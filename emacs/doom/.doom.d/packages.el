@@ -54,6 +54,11 @@
 (package! org-autolist)
 (package! xclip)
 (package! eink-theme)
+(package! color-theme-sanityinc-tomorrow)
+(package! focus)
+(package! vterm )
+(package! md4rd)
+(package! emacs-w3m)
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
