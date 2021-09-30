@@ -229,7 +229,14 @@ at URL has no title, return URL."
 )
 
 ;; From https://stackoverflow.com/questions/20866169/change-the-font-of-current-buffer-in-emacs
- (defun dorneanu/set-monospace-current-buffer ()
+;; https://emacs.stackexchange.com/questions/3038/using-a-different-font-for-each-major-mode
+(defun dorneanu/set-variable-font-current-buffer ()
+   "Set font to a variable width (proportional) fonts in current buffer"
+   (interactive)
+   (setq buffer-face-mode-face '(:family "Source Code Pro"))
+   (buffer-face-mode))
+
+ (defun dorneanu/set-monospace-font-current-buffer ()
    "Sets a fixed width (monospace) font in current buffer"
    (interactive)
    (setq buffer-face-mode-face '(:family "Fira Mono"))

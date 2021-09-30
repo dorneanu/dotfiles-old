@@ -154,6 +154,9 @@
 (add-hook 'org-mode-hook
           (lambda () (org-autolist-mode)))
 
+;; add font for org major mode
+(add-hook 'org-mode-hook 'dorneanu/set-monospace-font-current-buffer)
+
 ;; Allow to create new nodes when refiling
 (after! org
   (setq org-refile-allow-creating-parent-nodes 'confirm))
@@ -598,3 +601,4 @@
 (load! "+go")
 (load! "+python")
 (load! "+elfeed")
+(load! "+mail")
