@@ -21,7 +21,12 @@
 
         ;; elfeed
         "C-x w"  #'elfeed
+
+        ;; find file
         :nmvo "C-p"    #'counsel-projectile-find-file
+
+        ;; fzf
+
 
         ;; Leader Configs
         ;; From https://github.com/rschmukler/doom.d/blob/master/%2Bbindings.el
@@ -30,7 +35,9 @@
          (:desc "insert" :prefix "i"
           :desc "From kill-ring" :nv "p" #'counsel-yank-pop
           :desc "From snippet"   :nv "s" #'yas-insert-snippet)
-          :desc "Open like spacemacs" "SPC" #'counsel-M-x
+         :desc "Open like spacemacs" "SPC" #'counsel-M-x
+         :desc "Run counsel-fzf"  :n  "of"   #'counsel-fzf
+         :desc "Run counsel-ag"  :n  "ou"   #'counsel-ag
          )
 )
 
