@@ -53,7 +53,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/work/sync/org/")
+(setq org-directory "~/work/repos/org/")
 
 
 ;; Define captures here
@@ -63,7 +63,7 @@
     (org-capture-templates
      '(
             ("l" "Ledger")
-            ("lb" "Bank" plain (file "~/work/sync/org/main.ledger.gpg")
+            ("lb" "Bank" plain (file "~/work/repos/org/main.ledger.gpg")
                 "%(org-read-date) * %^{Description}\n\tExpenses:%^{Account}  %^{Amount}EUR\n\tAssets:Current:ING:Visa\n"
                 :empty-lines 1)
             ;; ("lc" "Cash" plain (file "~/work/sync/org/main.ledger"),
@@ -72,20 +72,20 @@
             ;;     Assets:Cash:Wallet"
             ;;     :empty-lines 1)
 
-            ("t" "Todo" entry (file+headline "~/work/sync/org/inbox.org" "Tasks")
+            ("t" "Todo" entry (file+headline "~/work/repos/org/inbox.org" "Tasks")
              "* TODO %?\n")
 
-            ("m" "Meeting" entry (file+headline "~/work/sync/org/inbox.org" "Meetings")
+            ("m" "Meeting" entry (file+headline "~/work/repos/org/inbox.org" "Meetings")
              "* MEETING %?\nSCHEDULED: %t\n%U\n%a\n")
 
-            ("b" "Bookmark (Clipboard)" entry (file+headline "~/work/sync/org/bookmarks.org" "Bookmarks")
+            ("b" "Bookmark (Clipboard)" entry (file+headline "~/work/repos/org/bookmarks.org" "Bookmarks")
              "** %(org-web-tools-insert-link-for-clipboard-url)\n:PROPERTIES:\n:TIMESTAMP: %t\n:END:\n%?"  :prepend t)
 
             ("s" "Code Snippet" entry
-             (file+headline "~/work/sync/org/inbox.org" "Snippets")
+             (file+headline "~/work/repos/org/inbox.org" "Snippets")
              "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
 
-            ("j" "Journal" entry (file+olp+datetree "~/work/sync/org/journal.org")
+            ("j" "Journal" entry (file+olp+datetree "~/work/repos/org/journal.org")
              "*  %?\n")
             ))
 )
@@ -141,22 +141,31 @@
           ("PING" . (:foreground "Green" :weight bold))
           ))
 
-    ;; (setq org-agenda-files (directory-files-recursively org-directory "\\.org$"))
-    ;; (setq org-agenda-files (org-directory))
-    (setq org-default-notes-file (concat org-directory "topics/notes.org"))
+  ;; (setq org-agenda-files (directory-files-recursively org-directory "\\.org$"))
+  ;; add gpg files as well
+  (unless (string-match-p "\\.gpg" org-agenda-file-regexp)
+    (setq org-agenda-file-regexp
+          (replace-regexp-in-string "\\\\\\.org" "\\\\.org\\\\(\\\\.gpg\\\\)?"
+                                    org-agenda-file-regexp)))
 
-    ;; Set default column view headings: Task Total-Time Time-Stamp
-    ;; from http://cachestocaches.com/2016/9/my-workflow-org-agenda/
-    (setq org-columns-default-format "%50ITEM(Task) %10TODO %10CLOCKSUM %18CLOSED %18TIMESTAMP_IA")
+  ;; Set agenda files
+  (setq org-agenda-files (list org-directory))
 
-    ;; add a new item when hitting return in a bulleted list
-    (add-hook 'org-mode-hook
-              (lambda ()
-                (org-autolist-mode)
-                ))
+  ;; where to put notes
+  (setq org-default-notes-file (concat org-directory "notes.org"))
 
-    ;; add hook font for org mode
-    (add-hook 'org-mode-hook 'dorneanu/set-monospace-font-current-buffer)
+  ;; Set default column view headings: Task Total-Time Time-Stamp
+  ;; from http://cachestocaches.com/2016/9/my-workflow-org-agenda/
+  (setq org-columns-default-format "%50ITEM(Task) %10TODO %10CLOCKSUM %18CLOSED %18TIMESTAMP_IA")
+
+  ;; add a new item when hitting return in a bulleted list
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (org-autolist-mode)
+              ))
+
+  ;; add hook font for org mode
+  (add-hook 'org-mode-hook 'dorneanu/set-monospace-font-current-buffer)
 )
 
 
@@ -555,7 +564,7 @@
 
 ;; setup elfeed
 (setq-default elfeed-search-filter "@2-day-ago +unread ")
-(setq rmh-elfeed-org-files (list "~/work/sync/org/elfeed.org"))
+(setq rmh-elfeed-org-files (list "~/work/repos/org/elfeed.org"))
 
 ;; setup ox-tiddly
 (require 'ox-tiddly)
