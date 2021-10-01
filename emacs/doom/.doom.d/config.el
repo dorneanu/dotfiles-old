@@ -55,45 +55,6 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/work/sync/org/")
 
-;; set agenda files
-(after! org
-    ;; (setq org-agenda-files (directory-files-recursively org-directory "\\.org$"))
-    ;; (setq org-agenda-files (org-directory))
-    (setq org-default-notes-file (concat org-directory "topics/notes.org")))
-
-;; set todo keywords
-(after! org
-    (setq org-todo-keywords
-          '(
-            (sequence "TODO(t)" "WIP(i)"  "MEETING(m)" "STARTED(s)" "NEXT(n)" "WAITING(w)" "BUG(b)" "PING(p)" "|" "DONE(d)")
-            (sequence "|" "CANCELED(c)" "DELEGATED(l)" "SOMEDAY(f)")
-            ))
-
-    (setq org-todo-keyword-faces
-          '(("WIP" . (:foreground "brightblue" :weight bold))
-            ("NEXT" . (:foreground "IndianRed1" :weight bold))
-            ("TODO" . (:foreground "green" :weight bold))
-            ("MEETING" . (:foreground "forest green" :weight bold))
-            ("STARTED" . (:foreground "OrangeRed" :weight bold))
-            ("WAITING" . (:foreground "coral" :weight bold))
-            ("CANCELED" . (:foreground "Red" :weight bold))
-            ("DELEGATED" . (:foreground "LimeGreen" :weight bold))
-            ("SOMEDAY" . (:foreground "LimeGreen" :weight bold))
-            ("BUG" . (:foreground "Orange" :weight bold))
-            ("PING" . (:foreground "Green" :weight bold))
-            ))
-)
-;; add org-habit
-(after! org
-  (add-to-list 'org-modules 'org-habit))
-
-;; set indentation
-(after! org
-  (org-indent-mode 1)
-  (setq org-indent-indentation-per-level 2)
-  (setq org-edit-src-content-indentation 0)
-  (setq org-src-preserve-indentation t)
-  )
 
 ;; Define captures here
 (use-package! org-capture
@@ -129,37 +90,75 @@
             ))
 )
 
-;; right-align tags
-(setq org-tags-column 80)
-(setq org-use-tag-inheritance t)
-
-;; do logging
 (after! org
-    (setq org-log-into-drawer t)
-    (setq org-log-done t)
-    (setq org-log-reschedule nil)
-    (setq org-log-redeadline nil))
+  ;; add org-habit
+  (add-to-list 'org-modules 'org-habit)
 
-;; disable org-babel execution while exporting
-(after! org
-    (setq org-confirm-babel-evaluate nil)
-    (setq org-export-use-babel t))
+  ;; right-align tags
+  (setq org-tags-column 80)
+  (setq org-use-tag-inheritance t)
 
-;; Use the special C-a, C-e and C-k definitions for Org, which enable some special behavior in headings.
-(after! org
+  ;; set indentation
+  (org-indent-mode 1)
+  (setq org-indent-indentation-per-level 2)
+  (setq org-edit-src-content-indentation 0)
+  (setq org-src-preserve-indentation t)
+
+  ;; do logging
+  (setq org-log-into-drawer t)
+  (setq org-log-done t)
+  (setq org-log-reschedule nil)
+  (setq org-log-redeadline nil)
+
+  ;; disable org-babel execution while exporting
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-export-use-babel t)
+
+  ;; Use the special C-a, C-e and C-k definitions for Org, which enable some special behavior in headings.
   (setq org-special-ctrl-a/e t)
-  (setq org-special-ctrl-k t))
+  (setq org-special-ctrl-k t)
 
-;; add a new item when hitting return in a bulleted list
-(add-hook 'org-mode-hook
-          (lambda () (org-autolist-mode)))
+  ;; Allow to create new nodes when refiling
+  (setq org-refile-allow-creating-parent-nodes 'confirm)
 
-;; add font for org major mode
-(add-hook 'org-mode-hook 'dorneanu/set-monospace-font-current-buffer)
+  (setq org-todo-keywords
+        '(
+          (sequence "TODO(t)" "WIP(i)"  "MEETING(m)" "STARTED(s)" "NEXT(n)" "WAITING(w)" "BUG(b)" "PING(p)" "|" "DONE(d)")
+          (sequence "|" "CANCELED(c)" "DELEGATED(l)" "SOMEDAY(f)")
+          ))
 
-;; Allow to create new nodes when refiling
-(after! org
-  (setq org-refile-allow-creating-parent-nodes 'confirm))
+  (setq org-todo-keyword-faces
+        '(("WIP" . (:foreground "brightblue" :weight bold))
+          ("NEXT" . (:foreground "IndianRed1" :weight bold))
+          ("TODO" . (:foreground "green" :weight bold))
+          ("MEETING" . (:foreground "forest green" :weight bold))
+          ("STARTED" . (:foreground "OrangeRed" :weight bold))
+          ("WAITING" . (:foreground "coral" :weight bold))
+          ("CANCELED" . (:foreground "Red" :weight bold))
+          ("DELEGATED" . (:foreground "LimeGreen" :weight bold))
+          ("SOMEDAY" . (:foreground "LimeGreen" :weight bold))
+          ("BUG" . (:foreground "Orange" :weight bold))
+          ("PING" . (:foreground "Green" :weight bold))
+          ))
+
+    ;; (setq org-agenda-files (directory-files-recursively org-directory "\\.org$"))
+    ;; (setq org-agenda-files (org-directory))
+    (setq org-default-notes-file (concat org-directory "topics/notes.org"))
+
+    ;; Set default column view headings: Task Total-Time Time-Stamp
+    ;; from http://cachestocaches.com/2016/9/my-workflow-org-agenda/
+    (setq org-columns-default-format "%50ITEM(Task) %10TODO %10CLOCKSUM %18CLOSED %18TIMESTAMP_IA")
+
+    ;; add a new item when hitting return in a bulleted list
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (org-autolist-mode)
+                ))
+
+    ;; add hook font for org mode
+    (add-hook 'org-mode-hook 'dorneanu/set-monospace-font-current-buffer)
+)
+
 
 ;; Enable variable and visual line mode in Org mode by default.
 (add-hook! org-mode :append
@@ -485,11 +484,6 @@
 (use-package plantuml-mode
   :config (setq plantuml-default-exec-mode "jar")
 )
-
-;; show time spent on tasks
-;; Set default column view headings: Task Total-Time Time-Stamp
-;; from http://cachestocaches.com/2016/9/my-workflow-org-agenda/
-(setq org-columns-default-format "%50ITEM(Task) %10TODO %10CLOCKSUM %18CLOSED %18TIMESTAMP_IA")
 
 ;; setup deft
 ;; (setq deft-directory "~/work/repos/brainfck.org/tw5/tiddlers")

@@ -233,11 +233,9 @@ at URL has no title, return URL."
 (defun dorneanu/set-variable-font-current-buffer ()
    "Set font to a variable width (proportional) fonts in current buffer"
    (interactive)
-   (setq buffer-face-mode-face '(:family "Source Code Pro"))
-   (buffer-face-mode))
+   (face-remap-add-relative 'default :family "Source Code Pro"))
 
  (defun dorneanu/set-monospace-font-current-buffer ()
    "Sets a fixed width (monospace) font in current buffer"
    (interactive)
-   (setq buffer-face-mode-face '(:family "Fira Mono"))
-   (buffer-face-mode))
+   (face-remap-add-relative 'default :family "Fira Mono"))
