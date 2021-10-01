@@ -46,6 +46,7 @@
       :after pocket-reader
       :nm "d" #'pocket-reader-delete
       :nm "a" #'pocket-reader-toggle-archived
+      :nm "B" #'pocket-reader-open-in-external-browser
       :nm "TAB" #'pocket-reader-open-url
       :nm "tr" #'pocket-reader-remove-tags
       :nm "tN" #'dorneanu/pocket-reader-remove-next
@@ -53,6 +54,7 @@
       :nm "ta" #'pocket-reader-add-tags
       :nm "gr" #'pocket-reader-refresh
       :nm "p" #'pocket-reader-search
+      :nm "U" #'pocket-reader-unmark-all
       :nm "y" #'pocket-reader-copy-url
       :nm "Y" #'dorneanu/pocket-reader-copy-to-scratch)
 
