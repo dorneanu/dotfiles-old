@@ -67,6 +67,7 @@ plugins=(
   zsh-z
   aws
   zsh-autosuggestions
+  zsh-pyenv
 )
 
 source $ZSH/oh-my-zsh.sh
