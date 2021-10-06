@@ -1,9 +1,117 @@
 ;;; +functions.el -*- lexical-binding: t; -*-
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; hugo
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun dorneanu/hugo-add-slug ()
+  "Adds a Hugo slug as EXPORT_FILE_NAME property"
  (interactive)
  (org-set-property "EXPORT_FILE_NAME"
- (org-hugo-slug (org-get-heading :no-tags :no-todo))))
+ (concat (format-time-string "%Y") "-" (org-hugo-slug (org-get-heading :no-tags :no-todo)))))
+
+;; see https://www.reddit.com/r/emacs/comments/q0nlgy/extract_link_from_org_header_and_insert_as/
+(defun dorneanu/hugo-org-replace-link-by-link-description ()
+  "Replace an org link by its description or if empty its address and adds hugo front matter as URL"
+  (interactive)
+  (if (org-in-regexp org-link-bracket-re 1)
+      (save-excursion
+        (let ((remove (list (match-beginning 0) (match-end 0)))
+              (description
+               (if (match-end 2)
+                   (org-match-string-no-properties 2)
+                 (org-match-string-no-properties 1)))
+              (url (org-match-string-no-properties 1)))
+          (apply 'delete-region remove)
+          (insert description)
+          (org-entry-put nil "EXPORT_HUGO_CUSTOM_FRONT_MATTER" (concat ":posturl " url))))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; getpocket
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Copy current url to scratch buffer
+(defun dorneanu/pocket-reader-copy-to-scratch ()
+  "Copy URL of current item to kill-ring/clipboard."
+  (interactive)
+  (when-let ((id (tabulated-list-get-id))
+             (item (ht-get pocket-reader-items id))
+             (url (pocket-reader--get-url item)))
+    (with-current-buffer "*scratch*"
+      (insert url)
+      (newline))
+     (message "Added: %s to scratch buffer" url)))
+
+;; Remove 2read and next tags from current pocket reader item
+(defun dorneanu/pocket-reader-remove-next()
+  (interactive)
+  (pocket-reader--remove-tags (list "2read" "next"))
+  (message "Removed 2read, next tags from current item")
+  (pocket-reader-toggle-archived)
+  (message "Archived item")
+  )
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Tiddlywiki
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun dorneanu/tiddlywiki-add-bookmark ()
+  "Adds a new bookmark to tiddlywiki. The URL is fetched from clipboard or killring"
+    (require 'url-util)
+    (interactive)
+    (pocket-reader-copy-url)
+
+    (setq my-url (org-web-tools--get-first-url))
+    (setq url-html (org-web-tools--get-url my-url))
+    (setq url-title (org-web-tools--html-title url-html))
+    (setq url-path (url-hexify-string url-title))
+    (setq url-note (read-string (concat "Note for " my-url ":")))
+    (setq url-tags (concat "Bookmark "(read-string "Additional tags: ")))
+
+    (request (concat "http://127.0.0.1:8181/recipes/default/tiddlers/" url-path)
+    :type "PUT"
+    :data (json-encode `(("name" . ,url-title) ("note" . ,url-note) ("url" . ,my-url) ("tags" . ,url-tags)))
+    :headers '(("Content-Type" . "application/json") ("X-Requested-With" . "TiddlyWiki") ("Accept" . "application/json"))
+    :parser 'json-read
+    :success
+    (cl-function
+            (lambda (&key data &allow-other-keys)
+                (message "I sent: %S" (assoc-default 'args data))))
+    :complete (lambda (&rest _) (message "Finished! %s" (symbol-value 'url-title)))
+    :error (lambda (&rest _) (message "Some error"))
+    :status-code '((400 . (lambda (&rest _) (message "Got 400.")))
+                    (418 . (lambda (&rest _) (message "Got 418.")))
+                    (204 . (lambda (&rest _) (message "Got 202."))))
+    )
+)
+
+(defun dorneanu/tiddlywiki-add-journal()
+  "Adds a new Tiddlywiki journal by fetching the last kill ring entry as content"
+  (interactive)
+  (let ((current-date (format-time-string "%Y-%m-%d")))
+    ;; (message "%s" current-date)
+    (request (concat "http://127.0.0.1:8181/recipes/default/tiddlers/" current-date)
+    :type "PUT"
+    :data (json-encode `(("title" . ,current-date) ("tags" . "Journal") ("text" . ,(current-kill 0 t))))
+    :headers '(("Content-Type" . "application/json") ("X-Requested-With" . "TiddlyWiki") ("Accept" . "application/json"))
+    :parser 'json-read
+    :success
+    (cl-function
+            (lambda (&key data &allow-other-keys)
+                (message "I sent: %S" (assoc-default 'args data))))
+    :complete (lambda (&rest _) (message "Finished! %s" current-date))
+    :error (lambda (&rest _) (message "Some error"))
+    :status-code '((400 . (lambda (&rest _) (message "Got 400.")))
+                    (418 . (lambda (&rest _) (message "Got 418.")))
+                    (204 . (lambda (&rest _) (message "Got 202."))))
+    ))
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Misc/Uncategorized
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun dorneanu/org-link-make-string (link &optional description)
   "Make a bracket link, consisting of LINK and DESCRIPTION.
@@ -155,78 +263,7 @@ at URL has no title, return URL."
 	    raw-link
             "]]")))
 
-;; Copy current url to scratch buffer
-(defun dorneanu/pocket-reader-copy-to-scratch ()
-  "Copy URL of current item to kill-ring/clipboard."
-  (interactive)
-  (when-let ((id (tabulated-list-get-id))
-             (item (ht-get pocket-reader-items id))
-             (url (pocket-reader--get-url item)))
-    (with-current-buffer "*scratch*"
-      (insert url)
-      (newline))
-     (message "Added: %s to scratch buffer" url)))
 
-;; Remove 2read and next tags from current pocket reader item
-(defun dorneanu/pocket-reader-remove-next()
-  (interactive)
-  (pocket-reader--remove-tags (list "2read" "next"))
-  (message "Removed 2read, next tags from current item")
-  (pocket-reader-toggle-archived)
-  (message "Archived item")
-  )
-
-(defun dorneanu/tiddlywiki-add-bookmark ()
-  "Adds a new bookmark to tiddlywiki. The URL is fetched from clipboard or killring"
-    (require 'url-util)
-    (interactive)
-    (pocket-reader-copy-url)
-
-    (setq my-url (org-web-tools--get-first-url))
-    (setq url-html (org-web-tools--get-url my-url))
-    (setq url-title (org-web-tools--html-title url-html))
-    (setq url-path (url-hexify-string url-title))
-    (setq url-note (read-string (concat "Note for " my-url ":")))
-    (setq url-tags (concat "Bookmark "(read-string "Additional tags: ")))
-
-    (request (concat "http://127.0.0.1:8181/recipes/default/tiddlers/" url-path)
-    :type "PUT"
-    :data (json-encode `(("name" . ,url-title) ("note" . ,url-note) ("url" . ,my-url) ("tags" . ,url-tags)))
-    :headers '(("Content-Type" . "application/json") ("X-Requested-With" . "TiddlyWiki") ("Accept" . "application/json"))
-    :parser 'json-read
-    :success
-    (cl-function
-            (lambda (&key data &allow-other-keys)
-                (message "I sent: %S" (assoc-default 'args data))))
-    :complete (lambda (&rest _) (message "Finished! %s" (symbol-value 'url-title)))
-    :error (lambda (&rest _) (message "Some error"))
-    :status-code '((400 . (lambda (&rest _) (message "Got 400.")))
-                    (418 . (lambda (&rest _) (message "Got 418.")))
-                    (204 . (lambda (&rest _) (message "Got 202."))))
-    )
-)
-
-(defun dorneanu/tiddlywiki-add-journal()
-  "Adds a new Tiddlywiki journal by fetching the last kill ring entry as content"
-  (interactive)
-  (let ((current-date (format-time-string "%Y-%m-%d")))
-    ;; (message "%s" current-date)
-    (request (concat "http://127.0.0.1:8181/recipes/default/tiddlers/" current-date)
-    :type "PUT"
-    :data (json-encode `(("title" . ,current-date) ("tags" . "Journal") ("text" . ,(current-kill 0 t))))
-    :headers '(("Content-Type" . "application/json") ("X-Requested-With" . "TiddlyWiki") ("Accept" . "application/json"))
-    :parser 'json-read
-    :success
-    (cl-function
-            (lambda (&key data &allow-other-keys)
-                (message "I sent: %S" (assoc-default 'args data))))
-    :complete (lambda (&rest _) (message "Finished! %s" current-date))
-    :error (lambda (&rest _) (message "Some error"))
-    :status-code '((400 . (lambda (&rest _) (message "Got 400.")))
-                    (418 . (lambda (&rest _) (message "Got 418.")))
-                    (204 . (lambda (&rest _) (message "Got 202."))))
-    ))
-)
 
 ;; From https://stackoverflow.com/questions/20866169/change-the-font-of-current-buffer-in-emacs
 ;; https://emacs.stackexchange.com/questions/3038/using-a-different-font-for-each-major-mode
@@ -239,3 +276,4 @@ at URL has no title, return URL."
    "Sets a fixed width (monospace) font in current buffer"
    (interactive)
    (face-remap-add-relative 'default :family "Fira Mono"))
+
